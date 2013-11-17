@@ -27,7 +27,9 @@ func realMain() int {
 		return 1
 	}
 
+	var outputTpl string
 	var parallel int
+	flag.StringVar(&outputTpl, "output", "{{.Dir}}_{{.OS}}_{{.Arch}}", "output path")
 	flag.IntVar(&parallel, "parallel", -1, "parallelization factor")
 	flag.Parse()
 
@@ -66,7 +68,7 @@ func realMain() int {
 				defer wg.Done()
 				semaphore <- 1
 				fmt.Printf("--> %s: %s\n", platform.String(), path)
-				if err := GoCrossCompile(path, platform); err != nil {
+				if err := GoCrossCompile(path, platform, outputTpl); err != nil {
 					fmt.Fprintf(os.Stderr, "%s error: %s", platform.String(), err)
 				}
 				<-semaphore

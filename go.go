@@ -9,20 +9,36 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"text/template"
 )
 
+type OutputTemplateData struct {
+	Dir  string
+	OS   string
+	Arch string
+}
+
 // GoCrossCompile
-func GoCrossCompile(dir string, platform Platform) error {
+func GoCrossCompile(dir string, platform Platform, outputTpl string) error {
 	env := append(os.Environ(),
-		"GOOS=" + platform.OS,
-		"GOARCH=" + platform.Arch)
+		"GOOS="+platform.OS,
+		"GOARCH="+platform.Arch)
 
-	outputName := fmt.Sprintf("%s_%s_%s",
-		filepath.Base(dir),
-		platform.OS,
-		platform.Arch)
+	var outputPath bytes.Buffer
+	tpl, err := template.New("output").Parse(outputTpl)
+	if err != nil {
+		return err
+	}
+	tplData := OutputTemplateData{
+		Dir:  filepath.Base(dir),
+		OS:   platform.OS,
+		Arch: platform.Arch,
+	}
+	if err := tpl.Execute(&outputPath, &tplData); err != nil {
+		return nil
+	}
 
-	_, err := execGo(env, "build", "-o", outputName, dir)
+	_, err = execGo(env, "build", "-o", outputPath.String(), dir)
 	return err
 }
 
