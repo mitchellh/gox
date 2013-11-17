@@ -58,7 +58,9 @@ func realMain() int {
 	platforms := SupportedPlatforms(version)
 
 	// Build in parallel!
+	var errorLock sync.Mutex
 	var wg sync.WaitGroup
+	errors := make([]string, 0)
 	semaphore := make(chan int, parallel)
 	for _, platform := range platforms {
 		for _, path := range mainDirs {
@@ -69,13 +71,24 @@ func realMain() int {
 				semaphore <- 1
 				fmt.Printf("--> %s: %s\n", platform.String(), path)
 				if err := GoCrossCompile(path, platform, outputTpl); err != nil {
-					fmt.Fprintf(os.Stderr, "%s error: %s", platform.String(), err)
+					errorLock.Lock()
+					defer errorLock.Unlock()
+					errors = append(errors,
+						fmt.Sprintf("%s error: %s", platform.String(), err))
 				}
 				<-semaphore
 			}(path, platform)
 		}
 	}
 	wg.Wait()
+
+	if len(errors) > 0 {
+		fmt.Fprintf(os.Stderr, "\n%d errors occurred:\n", len(errors))
+		for _, err := range errors {
+			fmt.Fprintf(os.Stderr, "--> %s\n", err)
+		}
+		return 1
+	}
 
 	return 0
 }
