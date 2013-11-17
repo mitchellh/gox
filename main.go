@@ -16,6 +16,17 @@ func main() {
 }
 
 func realMain() int {
+	var outputTpl string
+	var parallel int
+	flags := flag.NewFlagSet("gox", flag.ExitOnError)
+	flags.Usage = func() { printUsage() }
+	flags.StringVar(&outputTpl, "output", "{{.Dir}}_{{.OS}}_{{.Arch}}", "output path")
+	flags.IntVar(&parallel, "parallel", -1, "parallelization factor")
+	if err := flags.Parse(os.Args[1:]); err != nil {
+		flags.Usage()
+		return 1
+	}
+
 	if _, err := exec.LookPath("go"); err != nil {
 		fmt.Fprintf(os.Stderr, "go executable must be on the PATH\n")
 		return 1
@@ -27,16 +38,10 @@ func realMain() int {
 		return 1
 	}
 
-	var outputTpl string
-	var parallel int
-	flag.StringVar(&outputTpl, "output", "{{.Dir}}_{{.OS}}_{{.Arch}}", "output path")
-	flag.IntVar(&parallel, "parallel", -1, "parallelization factor")
-	flag.Parse()
-
 	// Determine the packages that we want to compile. We have to be sure
 	// to turn any absolute paths into relative paths so that they work
 	// properly with `go list`.
-	packages := flag.Args()
+	packages := flags.Args()
 	if len(packages) == 0 {
 		packages = []string{"."}
 	}
@@ -92,3 +97,25 @@ func realMain() int {
 
 	return 0
 }
+
+func printUsage() {
+	fmt.Fprintf(os.Stderr, helpText)
+}
+
+const helpText = `Usage: gox [options] [packages]
+
+  Gox cross-compiles Go applications in parallel.
+
+Options:
+
+  -output="foo"       Output path template. See below for more info.
+  -parallel=-1        Amount of parallelism, defaults to number of CPUs.
+
+Output path template:
+
+  The output path for the compiled binaries is specified with the
+  "-output" flag. The value is a string that is a Go text template.
+  The default value is "{{.Dir}}_{{.OS}}_{{.Arch}}". The variables and
+  their values should be self-explanatory.
+
+`
