@@ -97,10 +97,19 @@ func buildToolchain(wg *sync.WaitGroup, semaphore chan int, platform Platform, v
 		r, w := io.Pipe()
 		cmd.Stdout = w
 		cmd.Stderr = io.MultiWriter(cmd.Stderr, w)
+
+		// Send all the output to stdout, and also make a done channel
+		// so that this compilation isn't done until we receive all output
+		doneCh := make(chan struct{})
 		go func() {
+			defer close(doneCh)
 			for line := range iochan.DelimReader(r, '\n') {
 				fmt.Printf("%s: %s", platform.String(), line)
 			}
+		}()
+		defer func() {
+			w.Close()
+			<-doneCh
 		}()
 	}
 
