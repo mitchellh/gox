@@ -96,6 +96,7 @@ func buildToolchain(wg *sync.WaitGroup, semaphore chan int, platform Platform, v
 		// In verbose mode, we output all stdout to the console.
 		r, w := io.Pipe()
 		cmd.Stdout = w
+		cmd.Stderr = io.MultiWriter(cmd.Stderr, w)
 		go func() {
 			for line := range iochan.DelimReader(r, '\n') {
 				fmt.Printf("%s: %s", platform.String(), line)
