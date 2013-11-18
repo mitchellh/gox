@@ -4,6 +4,7 @@ IMPROVEMENTS:
 
   - Building toolchain no longer requires the GOROOT env var. It is
     now automatically detected using `go env`
+  - On Windows builds, ".exe" is appended to the output path.
 
 BUG FIXES:
 

@@ -38,6 +38,10 @@ func GoCrossCompile(dir string, platform Platform, outputTpl string) error {
 		return nil
 	}
 
+	if platform.OS == "windows" {
+		outputPath.WriteString(".exe")
+	}
+
 	_, err = execGo(env, "build", "-o", outputPath.String(), dir)
 	return err
 }
