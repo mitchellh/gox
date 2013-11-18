@@ -59,7 +59,14 @@ $ gox github.com/mitchellh/gox github.com/hashicorp/serf
 ...
 ```
 
-Just run `gox -h` for help and additional information.
+Or if you want to just build for linux:
+
+```
+$ gox -os="linux"
+...
+```
+
+And more! Just run `gox -h` for help and additional information.
 
 ## Versus Other Cross-Compile Tools
 
