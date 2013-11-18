@@ -53,7 +53,7 @@ func realMain() int {
 	if parallel <= 0 {
 		parallel = runtime.NumCPU()
 	}
-	fmt.Printf("Number of parallel builds: %d\n", parallel)
+	fmt.Printf("Number of parallel builds: %d\n\n", parallel)
 
 	// Get the packages that are in the given paths
 	mainDirs, err := GoMainDirs(packages)
