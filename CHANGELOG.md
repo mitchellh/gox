@@ -15,6 +15,7 @@ BUG FIXES:
 
   - When building toolchains with verbose mode, wait until output is fully
     read before moving on to next compilation.
+  - Work with `-os` or `-arch` is an empty string.
 
 ## 0.1.0 (November 17, 2013)
 
