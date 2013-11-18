@@ -26,7 +26,7 @@ func TestPlatformFlagPlatforms(t *testing.T) {
 
 		// Skipping platforms
 		{
-			[]string{"-foo"},
+			[]string{"!foo"},
 			[]string{},
 			[]Platform{
 				{"foo", "bar"},
@@ -38,9 +38,24 @@ func TestPlatformFlagPlatforms(t *testing.T) {
 			},
 		},
 
+		// Specifying only an OS
+		{
+			[]string{"foo"},
+			[]string{},
+			[]Platform{
+				{"foo", "bar"},
+				{"foo", "baz"},
+				{"bar", "bar"},
+			},
+			[]Platform{
+				{"foo", "bar"},
+				{"foo", "baz"},
+			},
+		},
+
 		// Building a new list, but with some skips
 		{
-			[]string{"foo", "bar", "-foo"},
+			[]string{"foo", "bar", "!foo"},
 			[]string{"baz"},
 			[]Platform{
 				{"foo", "bar"},

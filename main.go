@@ -131,7 +131,7 @@ Platforms (OS/Arch):
   The operating systems and architectures to cross-compile for may be
   specified with the "-arch" and "-os" flags. These are space separated lists
   of valid GOOS/GOARCH values to build for, respectively. You may prefix an
-  OS or Arch with "-" to negate and not build for that platform. If the list
+  OS or Arch with "!" to negate and not build for that platform. If the list
   is made up of only negations, then the negations will come from the default
   list.
 
