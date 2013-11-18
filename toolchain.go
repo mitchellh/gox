@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"github.com/mitchellh/iochan"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -12,7 +14,7 @@ import (
 )
 
 // The "main" method for when the toolchain build is requested.
-func mainBuildToolchain(parallel int, platformFlag PlatformFlag) int {
+func mainBuildToolchain(parallel int, platformFlag PlatformFlag, verbose bool) int {
 	if _, err := exec.LookPath("go"); err != nil {
 		fmt.Fprintf(os.Stderr, "You must have Go already built for your native platform\n")
 		fmt.Fprintf(os.Stderr, "and the `go` binary on the PATH to build toolchains.\n")
@@ -31,6 +33,11 @@ func mainBuildToolchain(parallel int, platformFlag PlatformFlag) int {
 		return 1
 	}
 
+	if verbose {
+		fmt.Println("Verbose mode enabled. Output from building each toolchain will be")
+		fmt.Println("outputted to stdout as they are built.\n")
+	}
+
 	// Determine the platforms we're building the toolchain for.
 	platforms := platformFlag.Platforms(SupportedPlatforms(version))
 
@@ -43,7 +50,8 @@ func mainBuildToolchain(parallel int, platformFlag PlatformFlag) int {
 	for _, platform := range platforms {
 		wg.Add(1)
 		go func() {
-			if err := buildToolchain(&wg, semaphore, platform); err != nil {
+			err := buildToolchain(&wg, semaphore, platform, verbose)
+			if err != nil {
 				errorLock.Lock()
 				defer errorLock.Unlock()
 				errs = append(errs, fmt.Errorf("%s: %s", platform.String(), err))
@@ -62,7 +70,7 @@ func mainBuildToolchain(parallel int, platformFlag PlatformFlag) int {
 	return 0
 }
 
-func buildToolchain(wg *sync.WaitGroup, semaphore chan int, platform Platform) error {
+func buildToolchain(wg *sync.WaitGroup, semaphore chan int, platform Platform, verbose bool) error {
 	defer wg.Done()
 	semaphore <- 1
 	defer func() { <-semaphore }()
@@ -82,6 +90,17 @@ func buildToolchain(wg *sync.WaitGroup, semaphore chan int, platform Platform) e
 		"GOARCH="+platform.Arch,
 		"GOOS="+platform.OS)
 	cmd.Stderr = &stderr
+
+	if verbose {
+		// In verbose mode, we output all stdout to the console.
+		r, w := io.Pipe()
+		cmd.Stdout = w
+		go func() {
+			for line := range iochan.DelimReader(r, '\n') {
+				fmt.Printf("%s: %s", platform.String(), line)
+			}
+		}()
+	}
 
 	if err := cmd.Start(); err != nil {
 		return fmt.Errorf("Error building '%s': %s", platform.String(), err)

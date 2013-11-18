@@ -20,6 +20,7 @@ func realMain() int {
 	var outputTpl string
 	var parallel int
 	var platformFlag PlatformFlag
+	var verbose bool
 	flags := flag.NewFlagSet("gox", flag.ExitOnError)
 	flags.Usage = func() { printUsage() }
 	flags.Var(platformFlag.ArchFlagValue(), "arch", "arch to build for or skip")
@@ -27,6 +28,7 @@ func realMain() int {
 	flags.StringVar(&outputTpl, "output", "{{.Dir}}_{{.OS}}_{{.Arch}}", "output path")
 	flags.IntVar(&parallel, "parallel", -1, "parallelization factor")
 	flags.BoolVar(&buildToolchain, "build-toolchain", false, "build toolchain")
+	flags.BoolVar(&verbose, "verbose", false, "verbose")
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		flags.Usage()
 		return 1
@@ -39,7 +41,7 @@ func realMain() int {
 	}
 
 	if buildToolchain {
-		return mainBuildToolchain(parallel, platformFlag)
+		return mainBuildToolchain(parallel, platformFlag, verbose)
 	}
 
 	if _, err := exec.LookPath("go"); err != nil {
@@ -120,11 +122,12 @@ const helpText = `Usage: gox [options] [packages]
 
 Options:
 
-  -arch=""            Space-separated list of architectures to build for.
-  -build-toolchain    Build cross-compilation toolchain.
-  -os=""              Space-separated list of operating systems to build for.
-  -output="foo"       Output path template. See below for more info.
-  -parallel=-1        Amount of parallelism, defaults to number of CPUs.
+  -arch=""            Space-separated list of architectures to build for
+  -build-toolchain    Build cross-compilation toolchain
+  -os=""              Space-separated list of operating systems to build for
+  -output="foo"       Output path template. See below for more info
+  -parallel=-1        Amount of parallelism, defaults to number of CPUs
+  -verbose            Verbose mode
 
 Output path template:
 
