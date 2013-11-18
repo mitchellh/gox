@@ -9,7 +9,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
-	"strings"
 	"sync"
 )
 
@@ -27,9 +26,9 @@ func mainBuildToolchain(parallel int, platformFlag PlatformFlag, verbose bool) i
 		return 1
 	}
 
-	root := os.Getenv("GOROOT")
-	if root == "" {
-		fmt.Fprintf(os.Stderr, "%s\n", strings.TrimSpace(gorootErrorText))
+	root, err := GoRoot()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error finding GOROOT: %s\n", err)
 		return 1
 	}
 
@@ -50,7 +49,7 @@ func mainBuildToolchain(parallel int, platformFlag PlatformFlag, verbose bool) i
 	for _, platform := range platforms {
 		wg.Add(1)
 		go func() {
-			err := buildToolchain(&wg, semaphore, platform, verbose)
+			err := buildToolchain(&wg, semaphore, root, platform, verbose)
 			if err != nil {
 				errorLock.Lock()
 				defer errorLock.Unlock()
@@ -71,7 +70,7 @@ func mainBuildToolchain(parallel int, platformFlag PlatformFlag, verbose bool) i
 	return 0
 }
 
-func buildToolchain(wg *sync.WaitGroup, semaphore chan int, platform Platform, verbose bool) error {
+func buildToolchain(wg *sync.WaitGroup, semaphore chan int, root string, platform Platform, verbose bool) error {
 	defer wg.Done()
 	semaphore <- 1
 	defer func() { <-semaphore }()
@@ -83,7 +82,7 @@ func buildToolchain(wg *sync.WaitGroup, semaphore chan int, platform Platform, v
 	}
 
 	var stderr bytes.Buffer
-	scriptDir := filepath.Join(os.Getenv("GOROOT"), "src")
+	scriptDir := filepath.Join(root, "src")
 	scriptPath := filepath.Join(scriptDir, scriptName)
 	cmd := exec.Command(scriptPath, "--no-clean")
 	cmd.Dir = scriptDir
@@ -124,15 +123,3 @@ func buildToolchain(wg *sync.WaitGroup, semaphore chan int, platform Platform, v
 
 	return nil
 }
-
-const gorootErrorText string = `
-You must set GOROOT to build the cross-compile toolchain. GOROOT must point
-to the directory containing the checkout of the Go source code. This only
-needs to be set while building the toolchain for cross-compilation with gox,
-and doesn't need to be set when using gox otherwise.
-
-Note that you probably should NOT set this value globally. Read the blog
-post below for more information on why that is:
-
-http://dave.cheney.net/2013/06/14/you-dont-need-to-set-goroot-really
-`

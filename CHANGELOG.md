@@ -1,5 +1,10 @@
 ## 0.1.1 (unreleased)
 
+IMPROVEMENTS:
+
+  - Building toolchain no longer requires the GOROOT env var. It is
+    now automatically detected using `go env`
+
 BUG FIXES:
 
   - When building toolchains with verbose mode, wait until output is fully

@@ -75,6 +75,16 @@ func GoMainDirs(packages []string) ([]string, error) {
 	return results, nil
 }
 
+// GoRoot returns the GOROOT value for the compiled `go` binary.
+func GoRoot() (string, error) {
+	output, err := execGo(nil, "env", "GOROOT")
+	if err != nil {
+		return "", err
+	}
+
+	return strings.TrimSpace(output), nil
+}
+
 // GoVersion reads the version of `go` that is on the PATH. This is done
 // instead of `runtime.Version()` because it is possible to run gox against
 // another Go version.
