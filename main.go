@@ -16,6 +16,7 @@ func main() {
 }
 
 func realMain() int {
+	var buildToolchain bool
 	var outputTpl string
 	var parallel int
 	var platformFlag PlatformFlag
@@ -25,9 +26,20 @@ func realMain() int {
 	flags.Var(platformFlag.OSFlagValue(), "os", "os to build for or skip")
 	flags.StringVar(&outputTpl, "output", "{{.Dir}}_{{.OS}}_{{.Arch}}", "output path")
 	flags.IntVar(&parallel, "parallel", -1, "parallelization factor")
+	flags.BoolVar(&buildToolchain, "build-toolchain", false, "build toolchain")
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		flags.Usage()
 		return 1
+	}
+
+	// Determine what amount of parallelism we want Default to the current
+	// number of CPUs is <= 0 is specified.
+	if parallel <= 0 {
+		parallel = runtime.NumCPU()
+	}
+
+	if buildToolchain {
+		return mainBuildToolchain(parallel, platformFlag)
 	}
 
 	if _, err := exec.LookPath("go"); err != nil {
@@ -48,13 +60,6 @@ func realMain() int {
 		packages = []string{"."}
 	}
 
-	// Determine what amount of parallelism we want Default to the current
-	// number of CPUs is <= 0 is specified.
-	if parallel <= 0 {
-		parallel = runtime.NumCPU()
-	}
-	fmt.Printf("Number of parallel builds: %d\n\n", parallel)
-
 	// Get the packages that are in the given paths
 	mainDirs, err := GoMainDirs(packages)
 	if err != nil {
@@ -66,6 +71,7 @@ func realMain() int {
 	platforms := platformFlag.Platforms(SupportedPlatforms(version))
 
 	// Build in parallel!
+	fmt.Printf("Number of parallel builds: %d\n\n", parallel)
 	var errorLock sync.Mutex
 	var wg sync.WaitGroup
 	errors := make([]string, 0)
@@ -115,6 +121,7 @@ const helpText = `Usage: gox [options] [packages]
 Options:
 
   -arch=""            Space-separated list of architectures to build for.
+  -build-toolchain    Build cross-compilation toolchain.
   -os=""              Space-separated list of operating systems to build for.
   -output="foo"       Output path template. See below for more info.
   -parallel=-1        Amount of parallelism, defaults to number of CPUs.
