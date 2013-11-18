@@ -38,15 +38,15 @@ func realMain() int {
 		return 1
 	}
 
-	// Determine the packages that we want to compile. We have to be sure
-	// to turn any absolute paths into relative paths so that they work
-	// properly with `go list`.
+	// Determine the packages that we want to compile. Default to the
+	// current directory if none are specified.
 	packages := flags.Args()
 	if len(packages) == 0 {
 		packages = []string{"."}
 	}
 
-	// Determine what amount of parallelism we want
+	// Determine what amount of parallelism we want Default to the current
+	// number of CPUs is <= 0 is specified.
 	if parallel <= 0 {
 		parallel = runtime.NumCPU()
 	}
