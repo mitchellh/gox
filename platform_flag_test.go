@@ -8,16 +8,20 @@ import (
 
 func TestPlatformFlagPlatforms(t *testing.T) {
 	cases := []struct {
-		OS      []string
-		Arch    []string
-		Default []Platform
-		Result  []Platform
+		OS        []string
+		Arch      []string
+		Supported []Platform
+		Result    []Platform
 	}{
 		// Building a new list of platforms
 		{
 			[]string{"foo", "bar"},
 			[]string{"baz"},
-			[]Platform{{"boo", "bop"}},
+			[]Platform{
+				{"foo", "baz"},
+				{"bar", "baz"},
+				{"boo", "bop"},
+			},
 			[]Platform{
 				{"foo", "baz"},
 				{"bar", "baz"},
@@ -60,10 +64,23 @@ func TestPlatformFlagPlatforms(t *testing.T) {
 			[]Platform{
 				{"foo", "bar"},
 				{"foo", "baz"},
+				{"bar", "baz"},
 				{"baz", "bar"},
 			},
 			[]Platform{
 				{"bar", "baz"},
+			},
+		},
+
+		// Unsupported pairs
+		{
+			[]string{"foo", "bar"},
+			[]string{"baz"},
+			[]Platform{
+				{"foo", "baz"},
+			},
+			[]Platform{
+				{"foo", "baz"},
 			},
 		},
 	}
@@ -74,7 +91,7 @@ func TestPlatformFlagPlatforms(t *testing.T) {
 			Arch: tc.Arch,
 		}
 
-		result := f.Platforms(tc.Default)
+		result := f.Platforms(tc.Supported)
 		if !reflect.DeepEqual(result, tc.Result) {
 			t.Errorf("input: %#v\nresult: %#v", f, result)
 		}

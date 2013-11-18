@@ -14,7 +14,7 @@ type PlatformFlag struct {
 
 // Platforms returns the list of platforms that were set by this flag.
 // The default set of platforms must be passed in.
-func (p *PlatformFlag) Platforms(def []Platform) []Platform {
+func (p *PlatformFlag) Platforms(supported []Platform) []Platform {
 	// NOTE: Reading this method alone is a bit hard to understand. It
 	// is much easier to understand this method if you pair this with the
 	// table of test cases it has.
@@ -41,8 +41,10 @@ func (p *PlatformFlag) Platforms(def []Platform) []Platform {
 
 	// We're building a list of new platforms, so build the list
 	// based only on the configured OS/arch pairs.
+	var prefilter []Platform = supported
 	if len(includeOS) > 0 && len(includeArch) > 0 {
-		def = make([]Platform, 0, len(p.Arch)*len(p.OS))
+		// Build up the list of prefiltered by what is specified
+		pendings := make([]Platform, 0, len(p.Arch)*len(p.OS))
 		for _, os := range p.OS {
 			if _, ok := includeOS[os]; !ok {
 				continue
@@ -53,14 +55,30 @@ func (p *PlatformFlag) Platforms(def []Platform) []Platform {
 					continue
 				}
 
-				def = append(def, Platform{os, arch})
+				pendings = append(pendings, Platform{os, arch})
+			}
+		}
+
+		// Remove any that aren't supported
+		prefilter = make([]Platform, 0, len(pendings))
+		for _, pending := range pendings {
+			found := false
+			for _, platform := range supported {
+				if pending == platform {
+					found = true
+					break
+				}
+			}
+
+			if found {
+				prefilter = append(prefilter, pending)
 			}
 		}
 	}
 
 	// Go through each default platform and filter out the bad ones
-	result := make([]Platform, 0, len(def))
-	for _, platform := range def {
+	result := make([]Platform, 0, len(prefilter))
+	for _, platform := range prefilter {
 		if len(ignoreArch) > 0 {
 			if _, ok := ignoreArch[platform.Arch]; ok {
 				continue
