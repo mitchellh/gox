@@ -1,5 +1,10 @@
 ## 0.1.1 (unreleased)
 
+FEATURES:
+
+  - Can specify `-ldflags` for the go build in order to get things like
+    variables injected into the compile.
+
 IMPROVEMENTS:
 
   - Building toolchain no longer requires the GOROOT env var. It is

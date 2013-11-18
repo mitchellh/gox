@@ -19,7 +19,7 @@ type OutputTemplateData struct {
 }
 
 // GoCrossCompile
-func GoCrossCompile(dir string, platform Platform, outputTpl string) error {
+func GoCrossCompile(dir string, platform Platform, outputTpl string, ldflags string) error {
 	env := append(os.Environ(),
 		"GOOS="+platform.OS,
 		"GOARCH="+platform.Arch)
@@ -42,7 +42,10 @@ func GoCrossCompile(dir string, platform Platform, outputTpl string) error {
 		outputPath.WriteString(".exe")
 	}
 
-	_, err = execGo(env, "build", "-o", outputPath.String(), dir)
+	_, err = execGo(env, "build",
+		"-ldflags", ldflags,
+		"-o", outputPath.String(),
+		dir)
 	return err
 }
 

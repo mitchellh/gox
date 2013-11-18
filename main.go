@@ -17,6 +17,7 @@ func main() {
 
 func realMain() int {
 	var buildToolchain bool
+	var ldflags string
 	var outputTpl string
 	var parallel int
 	var platformFlag PlatformFlag
@@ -25,6 +26,7 @@ func realMain() int {
 	flags.Usage = func() { printUsage() }
 	flags.Var(platformFlag.ArchFlagValue(), "arch", "arch to build for or skip")
 	flags.Var(platformFlag.OSFlagValue(), "os", "os to build for or skip")
+	flags.StringVar(&ldflags, "ldflags", "", "linker flags")
 	flags.StringVar(&outputTpl, "output", "{{.Dir}}_{{.OS}}_{{.Arch}}", "output path")
 	flags.IntVar(&parallel, "parallel", -1, "parallelization factor")
 	flags.BoolVar(&buildToolchain, "build-toolchain", false, "build toolchain")
@@ -86,7 +88,7 @@ func realMain() int {
 				defer wg.Done()
 				semaphore <- 1
 				fmt.Printf("--> %15s: %s\n", platform.String(), path)
-				if err := GoCrossCompile(path, platform, outputTpl); err != nil {
+				if err := GoCrossCompile(path, platform, outputTpl, ldflags); err != nil {
 					errorLock.Lock()
 					defer errorLock.Unlock()
 					errors = append(errors,
@@ -124,6 +126,7 @@ Options:
 
   -arch=""            Space-separated list of architectures to build for
   -build-toolchain    Build cross-compilation toolchain
+  -ldflags=""         Additional '-ldflags' value to pass to go build
   -os=""              Space-separated list of operating systems to build for
   -output="foo"       Output path template. See below for more info
   -parallel=-1        Amount of parallelism, defaults to number of CPUs
