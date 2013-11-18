@@ -77,7 +77,7 @@ func realMain() int {
 			go func(path string, platform Platform) {
 				defer wg.Done()
 				semaphore <- 1
-				fmt.Printf("--> %s: %s\n", platform.String(), path)
+				fmt.Printf("--> %15s: %s\n", platform.String(), path)
 				if err := GoCrossCompile(path, platform, outputTpl); err != nil {
 					errorLock.Lock()
 					defer errorLock.Unlock()
