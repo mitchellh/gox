@@ -58,6 +58,7 @@ func mainBuildToolchain(parallel int, platformFlag PlatformFlag, verbose bool) i
 			}
 		}()
 	}
+	wg.Wait()
 
 	if len(errs) > 0 {
 		fmt.Fprintf(os.Stderr, "\n%d errors occurred:\n", len(errs))
