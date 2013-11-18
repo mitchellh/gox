@@ -133,7 +133,7 @@ func (s *appendPlatformValue) Set(value string) error {
 	}
 
 	for _, v := range strings.Split(value, " ") {
-		s.appendIfMissing(v)
+		s.appendIfMissing(strings.ToLower(v))
 	}
 
 	return nil

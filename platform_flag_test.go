@@ -131,7 +131,7 @@ func TestAppendPlatformValue_impl(t *testing.T) {
 func TestAppendPlatformValue(t *testing.T) {
 	var value appendPlatformValue
 
-	if err := value.Set("windows linux"); err != nil {
+	if err := value.Set("windows LINUX"); err != nil {
 		t.Fatalf("err: %s", err)
 	}
 
