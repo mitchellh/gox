@@ -27,22 +27,22 @@ by default and build for every platform by default:
 $ gox
 Number of parallel builds: 4
 
---> darwin/386:    github.com/mitchellh/gox
---> darwin/amd64:  github.com/mitchellh/gox
---> linux/386:     github.com/mitchellh/gox
---> linux/amd64:   github.com/mitchellh/gox
---> linux/arm:     github.com/mitchellh/gox
---> freebsd/386:   github.com/mitchellh/gox
---> freebsd/amd64: github.com/mitchellh/gox
---> openbsd/386:   github.com/mitchellh/gox
---> openbsd/amd64: github.com/mitchellh/gox
---> windows/386:   github.com/mitchellh/gox
---> windows/amd64: github.com/mitchellh/gox
---> freebsd/arm:   github.com/mitchellh/gox
---> netbsd/386:    github.com/mitchellh/gox
---> netbsd/amd64:  github.com/mitchellh/gox
---> netbsd/arm:    github.com/mitchellh/gox
---> plan9/386:     github.com/mitchellh/gox
+-->      darwin/386: github.com/mitchellh/gox
+-->    darwin/amd64: github.com/mitchellh/gox
+-->       linux/386: github.com/mitchellh/gox
+-->     linux/amd64: github.com/mitchellh/gox
+-->       linux/arm: github.com/mitchellh/gox
+-->     freebsd/386: github.com/mitchellh/gox
+-->   freebsd/amd64: github.com/mitchellh/gox
+-->     openbsd/386: github.com/mitchellh/gox
+-->   openbsd/amd64: github.com/mitchellh/gox
+-->     windows/386: github.com/mitchellh/gox
+-->   windows/amd64: github.com/mitchellh/gox
+-->     freebsd/arm: github.com/mitchellh/gox
+-->      netbsd/386: github.com/mitchellh/gox
+-->    netbsd/amd64: github.com/mitchellh/gox
+-->      netbsd/arm: github.com/mitchellh/gox
+-->       plan9/386: github.com/mitchellh/gox
 ```
 
 Or, if you want to build a package and sub-packages:
