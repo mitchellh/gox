@@ -18,8 +18,11 @@ func main() {
 func realMain() int {
 	var outputTpl string
 	var parallel int
+	var platformFlag PlatformFlag
 	flags := flag.NewFlagSet("gox", flag.ExitOnError)
 	flags.Usage = func() { printUsage() }
+	flags.Var(platformFlag.ArchFlagValue(), "arch", "arch to build for or skip")
+	flags.Var(platformFlag.OSFlagValue(), "os", "os to build for or skip")
 	flags.StringVar(&outputTpl, "output", "{{.Dir}}_{{.OS}}_{{.Arch}}", "output path")
 	flags.IntVar(&parallel, "parallel", -1, "parallelization factor")
 	if err := flags.Parse(os.Args[1:]); err != nil {
@@ -60,7 +63,7 @@ func realMain() int {
 	}
 
 	// Determine the platforms we're building for
-	platforms := SupportedPlatforms(version)
+	platforms := platformFlag.Platforms(SupportedPlatforms(version))
 
 	// Build in parallel!
 	var errorLock sync.Mutex
@@ -106,8 +109,13 @@ const helpText = `Usage: gox [options] [packages]
 
   Gox cross-compiles Go applications in parallel.
 
+  If no specific operating systes or architectures are specified, Gox
+  will build for all pairs supported by your version of Go.
+
 Options:
 
+  -arch=""            Space-separated list of architectures to build for.
+  -os=""              Space-separated list of operating systems to build for.
   -output="foo"       Output path template. See below for more info.
   -parallel=-1        Amount of parallelism, defaults to number of CPUs.
 
@@ -117,5 +125,14 @@ Output path template:
   "-output" flag. The value is a string that is a Go text template.
   The default value is "{{.Dir}}_{{.OS}}_{{.Arch}}". The variables and
   their values should be self-explanatory.
+
+Platforms (OS/Arch):
+
+  The operating systems and architectures to cross-compile for may be
+  specified with the "-arch" and "-os" flags. These are space separated lists
+  of valid GOOS/GOARCH values to build for, respectively. You may prefix an
+  OS or Arch with "-" to negate and not build for that platform. If the list
+  is made up of only negations, then the negations will come from the default
+  list.
 
 `
