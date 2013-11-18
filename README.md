@@ -84,7 +84,7 @@ And more! Just run `gox -h` for help and additional information.
 A big thanks to these other options for existing. They each paved the
 way in many aspects to make Go cross-compilation approachable.
 
-* [Dave Cheney's go-cross-compile](https://github.com/davecheney/golang-crosscompile) -
+* [Dave Cheney's golang-crosscompile](https://github.com/davecheney/golang-crosscompile) -
   Gox compiles for multiple platforms and can therefore easily run on
   any platform Go supports. Dave's scripts require a shell.
 
