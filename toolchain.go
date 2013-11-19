@@ -48,14 +48,14 @@ func mainBuildToolchain(parallel int, platformFlag PlatformFlag, verbose bool) i
 	semaphore := make(chan int, parallel)
 	for _, platform := range platforms {
 		wg.Add(1)
-		go func() {
+		go func(platform Platform) {
 			err := buildToolchain(&wg, semaphore, root, platform, verbose)
 			if err != nil {
 				errorLock.Lock()
 				defer errorLock.Unlock()
 				errs = append(errs, fmt.Errorf("%s: %s", platform.String(), err))
 			}
-		}()
+		}(platform)
 	}
 	wg.Wait()
 
