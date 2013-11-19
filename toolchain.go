@@ -40,8 +40,14 @@ func mainBuildToolchain(parallel int, platformFlag PlatformFlag, verbose bool) i
 	// Determine the platforms we're building the toolchain for.
 	platforms := platformFlag.Platforms(SupportedPlatforms(version))
 
-	// Tell the user how much parallelization we will use
-	fmt.Printf("Number of parallel builds: %d\n\n", parallel)
+	// The toolchain build can't be parallelized.
+	if parallel > 1 {
+		fmt.Println("The toolchain build can't be parallelized because compiling a single")
+		fmt.Println("Go source directory can only be done for one platform at a time. Therefore,")
+		fmt.Println("the toolchain for each platform will be built one at a time.\n")
+	}
+	parallel = 1
+
 	var errorLock sync.Mutex
 	var wg sync.WaitGroup
 	errs := make([]error, 0)

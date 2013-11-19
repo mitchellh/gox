@@ -17,6 +17,7 @@ BUG FIXES:
     read before moving on to next compilation.
   - Work with `-os` or `-arch` is an empty string.
   - Building toolchain doesn't output "plan9" for all platforms.
+  - Don't parallelize toolchain building, because it doesn't work.
 
 ## 0.1.0 (November 17, 2013)
 
