@@ -26,6 +26,7 @@ func realMain() int {
 	flags.Usage = func() { printUsage() }
 	flags.Var(platformFlag.ArchFlagValue(), "arch", "arch to build for or skip")
 	flags.Var(platformFlag.OSFlagValue(), "os", "os to build for or skip")
+	flags.Var(platformFlag.OSArchFlagValue(), "osarch", "os and arch to build for or skip")
 	flags.StringVar(&ldflags, "ldflags", "", "linker flags")
 	flags.StringVar(&outputTpl, "output", "{{.Dir}}_{{.OS}}_{{.Arch}}", "output path")
 	flags.IntVar(&parallel, "parallel", -1, "parallelization factor")
