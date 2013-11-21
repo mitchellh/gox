@@ -8,8 +8,9 @@ import (
 // PlatformFlag is a flag.Value (and flag.Getter) implementation that
 // is used to track the os/arch flags on the command-line.
 type PlatformFlag struct {
-	OS   []string
-	Arch []string
+	OS     []string
+	Arch   []string
+	OSArch []string
 }
 
 // Platforms returns the list of platforms that were set by this flag.
@@ -18,6 +19,16 @@ func (p *PlatformFlag) Platforms(supported []Platform) []Platform {
 	// NOTE: Reading this method alone is a bit hard to understand. It
 	// is much easier to understand this method if you pair this with the
 	// table of test cases it has.
+
+	// Append any combo OSArch entries
+	for _, osArch := range p.OSArch {
+		parts := strings.Split(osArch, "/")
+		if len(parts) != 2 {
+			continue
+		}
+		p.OS = append(p.OS, parts[0])
+		p.Arch = append(p.Arch, parts[1])
+	}
 
 	// Build a list of OS and archs NOT to build
 	ignoreArch := make(map[string]struct{})
@@ -116,6 +127,12 @@ func (p *PlatformFlag) ArchFlagValue() flag.Value {
 // package to collect the operating systems for the flag.
 func (p *PlatformFlag) OSFlagValue() flag.Value {
 	return (*appendPlatformValue)(&p.OS)
+}
+
+// OSArchFlagValue returns a flag.Value that can be used with the flag
+// package to collect the operating systems for the flag.
+func (p *PlatformFlag) OSArchFlagValue() flag.Value {
+	return (*appendPlatformValue)(&p.OSArch)
 }
 
 // appendPlatformValue is a flag.Value that appends values to the list,
