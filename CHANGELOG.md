@@ -1,3 +1,9 @@
+## 0.3.0 (November 23, 2013)
+
+FEATURES:
+
+  - Use `-osarch` to specify complete os/arch pairs to build for.
+
 ## 0.2.0 (November 19, 2013)
 
 FEATURES:
