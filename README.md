@@ -19,8 +19,7 @@ $ gox -h
 ## Usage
 
 Before you use Gox, you must build the cross-compilation toolchain. Gox can
-do this for you and will parallelize this process. Still, it can take some
-time. This only has to be done once (or whenever you update Go):
+do this for you. This only has to be done once (or whenever you update Go):
 
 ```
 $ gox -build-toolchain
