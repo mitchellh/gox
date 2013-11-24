@@ -77,6 +77,13 @@ $ gox -os="linux"
 ...
 ```
 
+Or maybe you just want to build for 64-bit linux:
+
+```
+$ gox -osarch="linux/amd64"
+...
+```
+
 And more! Just run `gox -h` for help and additional information.
 
 ## Versus Other Cross-Compile Tools

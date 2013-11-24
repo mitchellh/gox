@@ -25,6 +25,7 @@ func realMain() int {
 	flags := flag.NewFlagSet("gox", flag.ExitOnError)
 	flags.Usage = func() { printUsage() }
 	flags.Var(platformFlag.ArchFlagValue(), "arch", "arch to build for or skip")
+	flags.Var(platformFlag.OSArchFlagValue(), "osarch", "os/arch pairs to build for or skip")
 	flags.Var(platformFlag.OSFlagValue(), "os", "os to build for or skip")
 	flags.StringVar(&ldflags, "ldflags", "", "linker flags")
 	flags.StringVar(&outputTpl, "output", "{{.Dir}}_{{.OS}}_{{.Arch}}", "output path")
@@ -128,6 +129,7 @@ Options:
   -build-toolchain    Build cross-compilation toolchain
   -ldflags=""         Additional '-ldflags' value to pass to go build
   -os=""              Space-separated list of operating systems to build for
+  -osarch=""          Space-separated list of os/arch pairs to build for
   -output="foo"       Output path template. See below for more info
   -parallel=-1        Amount of parallelism, defaults to number of CPUs
   -verbose            Verbose mode
@@ -147,5 +149,15 @@ Platforms (OS/Arch):
   OS or Arch with "!" to negate and not build for that platform. If the list
   is made up of only negations, then the negations will come from the default
   list.
+
+  Additionally, the "-osarch" flag may be used to specify complete os/arch
+  pairs that should be built or ignored. The syntax for this is what you would
+  expect: "darwin/amd64" would be a valid osarch value. Multiple can be space
+  separated. An os/arch pair can begin with "!" to not build for that platform.
+
+  The "-osarch" flag has the highest precedent when determing whether to
+  build for a platform. If it is included in the "-osarch" list, it will be
+  built even if the specific os and arch is negated in "-os" and "-arch",
+  respectively.
 
 `
