@@ -92,7 +92,9 @@ way in many aspects to make Go cross-compilation approachable.
 
 * [Dave Cheney's golang-crosscompile](https://github.com/davecheney/golang-crosscompile) -
   Gox compiles for multiple platforms and can therefore easily run on
-  any platform Go supports. Dave's scripts require a shell.
+  any platform Go supports, whereas Dave's scripts require a shell. Gox
+  will also parallelize builds. Dave's scripts build sequentially. Gox has
+  much easier to use OS/Arch filtering built in.
 
 * [goxc](https://github.com/laher/goxc) -
   A very richly featured tool that can even do things such as build system
@@ -100,5 +102,7 @@ way in many aspects to make Go cross-compilation approachable.
   super slim alternative that only cross-compiles binaries. goxc assumes that
   you're cross-compiling using the same version of Go that built goxc, whereas
   Gox can be used anywhere a `go` binary is available. So you can build Gox
-  with Go 1.2 and build with Go 1.0.
+  with Go 1.2 and build with Go 1.0. Gox builds packages in parallel, whereas
+  goxc doesn't. Gox doesn't enforce a specific output structure for built
+  binaries.
 
