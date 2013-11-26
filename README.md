@@ -99,10 +99,7 @@ way in many aspects to make Go cross-compilation approachable.
 * [goxc](https://github.com/laher/goxc) -
   A very richly featured tool that can even do things such as build system
   packages, upload binaries, generate download webpages, etc. Gox is a
-  super slim alternative that only cross-compiles binaries. goxc assumes that
-  you're cross-compiling using the same version of Go that built goxc, whereas
-  Gox can be used anywhere a `go` binary is available. So you can build Gox
-  with Go 1.2 and build with Go 1.0. Gox builds packages in parallel, whereas
+  super slim alternative that only cross-compiles binaries. Gox builds packages in parallel, whereas
   goxc doesn't. Gox doesn't enforce a specific output structure for built
   binaries.
 
