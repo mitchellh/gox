@@ -1,3 +1,9 @@
+## 0.3.1 (unreleased)
+
+BUG FIXES:
+
+  - Gox can build packages outside of the `GOPATH`. [GH-4]
+
 ## 0.3.0 (November 23, 2013)
 
 FEATURES:

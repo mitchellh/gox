@@ -42,10 +42,24 @@ func GoCrossCompile(dir string, platform Platform, outputTpl string, ldflags str
 		outputPath.WriteString(".exe")
 	}
 
-	_, err = execGo(env, "build",
+	// Determine the full path to the output so that we can change our
+	// working directory when executing go build.
+	outputPathReal := outputPath.String()
+	outputPathReal, err = filepath.Abs(outputPathReal)
+	if err != nil {
+		return err
+	}
+
+	// Go prefixes the import directory with '_' when it is outside
+	// the GOPATH.For this, we just drop it since we move to that
+	// directory to build.
+	if dir[0] == '_' {
+		dir = dir[1:]
+	}
+
+	_, err = execGo(env, dir, "build",
 		"-ldflags", ldflags,
-		"-o", outputPath.String(),
-		dir)
+		"-o", outputPathReal)
 	return err
 }
 
@@ -57,7 +71,7 @@ func GoMainDirs(packages []string) ([]string, error) {
 	args = append(args, "list", "-f", "{{.Name}}|{{.ImportPath}}")
 	args = append(args, packages...)
 
-	output, err := execGo(nil, args...)
+	output, err := execGo(nil, "", args...)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +98,7 @@ func GoMainDirs(packages []string) ([]string, error) {
 
 // GoRoot returns the GOROOT value for the compiled `go` binary.
 func GoRoot() (string, error) {
-	output, err := execGo(nil, "env", "GOROOT")
+	output, err := execGo(nil, "", "env", "GOROOT")
 	if err != nil {
 		return "", err
 	}
@@ -113,16 +127,19 @@ func GoVersion() (string, error) {
 	}
 
 	// Execute and read the version, which will be the only thing on stdout.
-	return execGo(nil, "run", sourcePath)
+	return execGo(nil, "", "run", sourcePath)
 }
 
-func execGo(env []string, args ...string) (string, error) {
+func execGo(env []string, dir string, args ...string) (string, error) {
 	var stderr, stdout bytes.Buffer
 	cmd := exec.Command("go", args...)
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	if env != nil {
 		cmd.Env = env
+	}
+	if dir != "" {
+		cmd.Dir = dir
 	}
 	if err := cmd.Run(); err != nil {
 		err = fmt.Errorf("%s\nStderr: %s", err, stderr.String())
