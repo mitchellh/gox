@@ -19,7 +19,7 @@ type OutputTemplateData struct {
 }
 
 // GoCrossCompile
-func GoCrossCompile(dir string, platform Platform, outputTpl string, ldflags string) error {
+func GoCrossCompile(packagePath string, platform Platform, outputTpl string, ldflags string) error {
 	env := append(os.Environ(),
 		"GOOS="+platform.OS,
 		"GOARCH="+platform.Arch)
@@ -30,7 +30,7 @@ func GoCrossCompile(dir string, platform Platform, outputTpl string, ldflags str
 		return err
 	}
 	tplData := OutputTemplateData{
-		Dir:  filepath.Base(dir),
+		Dir:  filepath.Base(packagePath),
 		OS:   platform.OS,
 		Arch: platform.Arch,
 	}
@@ -53,14 +53,13 @@ func GoCrossCompile(dir string, platform Platform, outputTpl string, ldflags str
 	// Go prefixes the import directory with '_' when it is outside
 	// the GOPATH.For this, we just drop it since we move to that
 	// directory to build.
-	packagePath := dir
-	dir = ""
+	chdir := ""
 	if packagePath[0] == '_' {
-		dir = packagePath[1:]
+		chdir = packagePath[1:]
 		packagePath = ""
 	}
 
-	_, err = execGo(env, dir, "build",
+	_, err = execGo(env, chdir, "build",
 		"-ldflags", ldflags,
 		"-o", outputPathReal,
 		packagePath)
