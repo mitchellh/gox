@@ -53,13 +53,17 @@ func GoCrossCompile(dir string, platform Platform, outputTpl string, ldflags str
 	// Go prefixes the import directory with '_' when it is outside
 	// the GOPATH.For this, we just drop it since we move to that
 	// directory to build.
-	if dir[0] == '_' {
-		dir = dir[1:]
+	packagePath := dir
+	dir = ""
+	if packagePath[0] == '_' {
+		dir = packagePath[1:]
+		packagePath = ""
 	}
 
 	_, err = execGo(env, dir, "build",
 		"-ldflags", ldflags,
-		"-o", outputPathReal)
+		"-o", outputPathReal,
+		packagePath)
 	return err
 }
 
