@@ -1,7 +1,10 @@
 package main
 
 import (
+	"archive/tar"
+	"archive/zip"
 	"bytes"
+	"compress/gzip"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -19,7 +22,7 @@ type OutputTemplateData struct {
 }
 
 // GoCrossCompile
-func GoCrossCompile(packagePath string, platform Platform, outputTpl string, ldflags string) error {
+func GoCrossCompile(packagePath string, platform Platform, outputTpl string, ldflags string, compress bool) error {
 	env := append(os.Environ(),
 		"GOOS="+platform.OS,
 		"GOARCH="+platform.Arch)
@@ -38,7 +41,7 @@ func GoCrossCompile(packagePath string, platform Platform, outputTpl string, ldf
 		return nil
 	}
 
-	if platform.OS == "windows" {
+	if platform.OS == "windows" && !compress {
 		outputPath.WriteString(".exe")
 	}
 
@@ -63,7 +66,134 @@ func GoCrossCompile(packagePath string, platform Platform, outputTpl string, ldf
 		"-ldflags", ldflags,
 		"-o", outputPathReal,
 		packagePath)
-	return err
+
+	if err != nil {
+		return err
+	}
+
+	if !compress {
+		return nil
+	}
+
+	binaryName := filepath.Base(packagePath)
+
+	// FIXME: Is there an append method
+	if platform.OS == "windows" {
+		binaryName = binaryName + ".exe"
+	}
+
+	if platform.OS == "windows" || platform.OS == "darwin" {
+		err = createZip(outputPathReal, binaryName)
+	} else {
+		err = createTar(outputPathReal, binaryName)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return os.Remove(outputPathReal)
+}
+
+func createTar(outputPath string, binaryName string) error {
+	// Add the output path to a zip or tar file of the same name
+	// The binary in the zipfile is just the module name
+	// Create a buffer to write our archive to.
+	archivePathReal := outputPath + ".tar.gz"
+
+	f, err := os.OpenFile(archivePathReal, os.O_CREATE|os.O_WRONLY, 0666)
+
+	if err != nil {
+		return err
+	}
+
+	// Create a new zip archive.
+	gw := gzip.NewWriter(f)
+	w := tar.NewWriter(gw)
+
+	fi, err := os.Stat(outputPath)
+
+	if err != nil {
+		return err
+	}
+
+	header, err := tar.FileInfoHeader(fi, "")
+
+	if err != nil {
+		return err
+	}
+
+	header.Name = binaryName
+
+	err = w.WriteHeader(header)
+
+	if err != nil {
+		return err
+	}
+
+	contents, err := ioutil.ReadFile(outputPath)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = w.Write(contents)
+
+	if err != nil {
+		return err
+	}
+
+	err = w.Close()
+
+	if err != nil {
+		return err
+	}
+
+	err = gw.Close()
+
+	if err != nil {
+		return err
+	}
+
+	// Make sure to check the error on Close.
+	return f.Close()
+}
+
+func createZip(outputPath string, binaryName string) error {
+	// Add the output path to a zip or tar file of the same name
+	// The binary in the zipfile is just the module name
+	// Create a buffer to write our archive to.
+	archivePathReal := outputPath + ".zip"
+
+	zipFile, err := os.Create(archivePathReal)
+
+	if err != nil {
+		return err
+	}
+
+	// Create a new zip archive.
+	w := zip.NewWriter(zipFile)
+
+	f, err := w.Create(binaryName)
+
+	if err != nil {
+		return err
+	}
+
+	contents, err := ioutil.ReadFile(outputPath)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = f.Write(contents)
+
+	if err != nil {
+		return err
+	}
+
+	// Make sure to check the error on Close.
+	return w.Close()
 }
 
 // GoMainDirs returns the file paths to the packages that are "main"
