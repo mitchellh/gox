@@ -101,10 +101,15 @@ func createTar(outputPath string, binaryName string) error {
 	// Create a buffer to write our archive to.
 	archivePathReal := outputPath + ".tar.gz"
 
-	var b bytes.Buffer
+	f, err := os.OpenFile(archivePathReal, os.O_CREATE|os.O_WRONLY, 0666)
+
+	if err != nil {
+		return err
+	}
 
 	// Create a new zip archive.
-	w := tar.NewWriter(&b)
+	gw := gzip.NewWriter(f)
+	w := tar.NewWriter(gw)
 
 	fi, err := os.Stat(outputPath)
 
@@ -117,6 +122,8 @@ func createTar(outputPath string, binaryName string) error {
 	if err != nil {
 		return err
 	}
+
+	header.Name = binaryName
 
 	err = w.WriteHeader(header)
 
@@ -138,19 +145,18 @@ func createTar(outputPath string, binaryName string) error {
 
 	err = w.Close()
 
-	var gb bytes.Buffer
+	if err != nil {
+		return err
+	}
 
-	// Create a new zip archive.
-	gw := gzip.NewWriter(&gb)
-
-	_, err = gw.Write(b.Bytes())
+	err = gw.Close()
 
 	if err != nil {
 		return err
 	}
 
 	// Make sure to check the error on Close.
-	return ioutil.WriteFile(archivePathReal, gb.Bytes(), 0666)
+	return f.Close()
 }
 
 func createZip(outputPath string, binaryName string) error {
