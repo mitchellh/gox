@@ -88,6 +88,7 @@ func buildToolchain(wg *sync.WaitGroup, semaphore chan int, root string, platfor
 	}
 
 	var stderr bytes.Buffer
+	var stdout bytes.Buffer
 	scriptDir := filepath.Join(root, "src")
 	scriptPath := filepath.Join(scriptDir, scriptName)
 	cmd := exec.Command(scriptPath, "--no-clean")
@@ -96,6 +97,7 @@ func buildToolchain(wg *sync.WaitGroup, semaphore chan int, root string, platfor
 		"GOARCH="+platform.Arch,
 		"GOOS="+platform.OS)
 	cmd.Stderr = &stderr
+	cmd.Stdout = &stdout
 
 	if verbose {
 		// In verbose mode, we output all stdout to the console.
@@ -123,8 +125,8 @@ func buildToolchain(wg *sync.WaitGroup, semaphore chan int, root string, platfor
 	}
 
 	if err := cmd.Wait(); err != nil {
-		return fmt.Errorf("Error building '%s': %s",
-			platform.String(), stderr.String())
+		return fmt.Errorf("Error building '%s'.\n\nStdout: %s\n\nStderr: %s\n",
+			platform.String(), stdout.String(), stderr.String())
 	}
 
 	return nil
