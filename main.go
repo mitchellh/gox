@@ -74,6 +74,12 @@ func realMain() int {
 
 	// Determine the platforms we're building for
 	platforms := platformFlag.Platforms(SupportedPlatforms(version))
+	if len(platforms) == 0 {
+		fmt.Println("No valid platforms to build for. If you specified a value")
+		fmt.Println("for the 'os', 'arch', or 'osarch' flags, make sure you're")
+		fmt.Println("using a valid value.")
+		return 0
+	}
 
 	// Build in parallel!
 	fmt.Printf("Number of parallel builds: %d\n\n", parallel)
