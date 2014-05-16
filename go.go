@@ -35,7 +35,7 @@ func GoCrossCompile(packagePath string, platform Platform, outputTpl string, ldf
 		Arch: platform.Arch,
 	}
 	if err := tpl.Execute(&outputPath, &tplData); err != nil {
-		return nil
+		return err
 	}
 
 	if platform.OS == "windows" {
