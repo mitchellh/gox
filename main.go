@@ -21,6 +21,7 @@ func realMain() int {
 	var outputTpl string
 	var parallel int
 	var platformFlag PlatformFlag
+	var tags string
 	var verbose bool
 	flags := flag.NewFlagSet("gox", flag.ExitOnError)
 	flags.Usage = func() { printUsage() }
@@ -28,6 +29,7 @@ func realMain() int {
 	flags.Var(platformFlag.OSArchFlagValue(), "osarch", "os/arch pairs to build for or skip")
 	flags.Var(platformFlag.OSFlagValue(), "os", "os to build for or skip")
 	flags.StringVar(&ldflags, "ldflags", "", "linker flags")
+	flags.StringVar(&tags, "tags", "", "go build tags")
 	flags.StringVar(&outputTpl, "output", "{{.Dir}}_{{.OS}}_{{.Arch}}", "output path")
 	flags.IntVar(&parallel, "parallel", -1, "parallelization factor")
 	flags.BoolVar(&buildToolchain, "build-toolchain", false, "build toolchain")
@@ -95,7 +97,7 @@ func realMain() int {
 				defer wg.Done()
 				semaphore <- 1
 				fmt.Printf("--> %15s: %s\n", platform.String(), path)
-				if err := GoCrossCompile(path, platform, outputTpl, ldflags); err != nil {
+				if err := GoCrossCompile(path, platform, outputTpl, ldflags, tags); err != nil {
 					errorLock.Lock()
 					defer errorLock.Unlock()
 					errors = append(errors,
@@ -134,6 +136,7 @@ Options:
   -arch=""            Space-separated list of architectures to build for
   -build-toolchain    Build cross-compilation toolchain
   -ldflags=""         Additional '-ldflags' value to pass to go build
+  -tags=""            Additional '-tags' value to pass to go build
   -os=""              Space-separated list of operating systems to build for
   -osarch=""          Space-separated list of os/arch pairs to build for
   -output="foo"       Output path template. See below for more info
