@@ -18,11 +18,13 @@ func (p *Platform) String() string {
 var (
 	OsList = []string{
 		"darwin",
-		"linux",
+		"dragonfly",
 		"freebsd",
+		"linux",
 		"netbsd",
 		"openbsd",
 		"plan9",
+		"solaris",
 		"windows",
 	}
 
