@@ -11,7 +11,7 @@ func TestGoVersion(t *testing.T) {
 		t.Fatalf("err: %s", err)
 	}
 
-	acceptable := []string{"devel", "go1.0", "go1.1", "go1.2"}
+	acceptable := []string{"devel", "go1.0", "go1.1", "go1.2", "go1.3"}
 	found := false
 	for _, expected := range acceptable {
 		if strings.HasPrefix(v, expected) {

@@ -53,6 +53,12 @@ var (
 		{"netbsd", "arm"},
 		{"plan9", "386"},
 	}...)
+
+	Platforms_1_3 = append(Platforms_1_1, []Platform{
+		{"dragonfly", "386"},
+		{"dragonfly", "amd64"},
+		{"solaris", "amd64"},
+	}...)
 )
 
 // SupportedPlatforms returns the full list of supported platforms for
@@ -60,6 +66,8 @@ var (
 func SupportedPlatforms(v string) []Platform {
 	if strings.HasPrefix(v, "go1.0") {
 		return Platforms_1_0
+	} else if strings.HasPrefix(v, "go1.3") {
+		return Platforms_1_3
 	}
 
 	return Platforms_1_1
