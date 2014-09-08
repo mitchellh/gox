@@ -30,7 +30,9 @@ func GoCrossCompile(packagePath string, platform Platform, outputTpl string, ldf
 		return err
 	}
 	tplData := OutputTemplateData{
-		Dir:  filepath.Base(packagePath),
+		// If compiling a file, use that file's name without extension.
+		// Otherwise use the package name
+		Dir:  filepath.Base(strings.TrimSuffix(packagePath, ".go")),
 		OS:   platform.OS,
 		Arch: platform.Arch,
 	}
@@ -52,9 +54,9 @@ func GoCrossCompile(packagePath string, platform Platform, outputTpl string, ldf
 
 	// Go prefixes the import directory with '_' when it is outside
 	// the GOPATH.For this, we just drop it since we move to that
-	// directory to build.
+	// directory to build.  Only do this for packages, not files.
 	chdir := ""
-	if packagePath[0] == '_' {
+	if packagePath[0] == '_' && filepath.Ext(packagePath) != ".go" {
 		chdir = packagePath[1:]
 		packagePath = ""
 	}
@@ -70,17 +72,33 @@ func GoCrossCompile(packagePath string, platform Platform, outputTpl string, ldf
 // GoMainDirs returns the file paths to the packages that are "main"
 // packages, from the list of packages given. The list of packages can
 // include relative paths, the special "..." Go keyword, etc.
-func GoMainDirs(packages []string) ([]string, error) {
-	args := make([]string, 0, len(packages)+3)
-	args = append(args, "list", "-f", "{{.Name}}|{{.ImportPath}}")
-	args = append(args, packages...)
-
-	output, err := execGo(nil, "", args...)
-	if err != nil {
-		return nil, err
+func GoMainDirs(compileThese []string) ([]string, error) {
+	// Separate the packages from the files
+	files := make([]string, 0)
+	packages := make([]string, 0)
+	for _, p := range compileThese {
+		if filepath.Ext(p) == ".go" {
+			files = append(files, p)
+		} else {
+			packages = append(packages, p)
+		}
 	}
 
-	results := make([]string, 0, len(output))
+	results := make([]string, 0)
+	output := ""
+
+	if len(packages) != 0 {
+		args := make([]string, 0, len(packages)+3)
+		args = append(args, "list", "-f", "{{.Name}}|{{.ImportPath}}")
+		args = append(args, packages...)
+
+		var err error
+		output, err = execGo(nil, "", args...)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	for _, line := range strings.Split(output, "\n") {
 		if line == "" {
 			continue
@@ -96,6 +114,8 @@ func GoMainDirs(packages []string) ([]string, error) {
 			results = append(results, parts[1])
 		}
 	}
+
+	results = append(results, files...)
 
 	return results, nil
 }
