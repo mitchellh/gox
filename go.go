@@ -19,7 +19,7 @@ type OutputTemplateData struct {
 }
 
 // GoCrossCompile
-func GoCrossCompile(packagePath string, platform Platform, outputTpl string, ldflags string, tags string) error {
+func GoCrossCompile(pkg string, packagePath string, platform Platform, outputTpl string, ldflags string, tags string, test bool) error {
 	env := append(os.Environ(),
 		"GOOS="+platform.OS,
 		"GOARCH="+platform.Arch)
@@ -59,18 +59,31 @@ func GoCrossCompile(packagePath string, platform Platform, outputTpl string, ldf
 		packagePath = ""
 	}
 
-	_, err = execGo(env, chdir, "build",
-		"-ldflags", ldflags,
+	var args []string
+	if test {
+		args = []string{"test", "-c"}
+	} else {
+		args = []string{"build"}
+	}
+	if !test {
+		args = append(args, "-o", outputPathReal)
+	}
+	args = append(args, "-ldflags", ldflags,
 		"-tags", tags,
-		"-o", outputPathReal,
 		packagePath)
+	_, err = execGo(env, chdir, args...)
+	if err == nil && test {
+		err = renameTestExecutable(pkg, platform)
+	}
 	return err
 }
 
-// GoMainDirs returns the file paths to the packages that are "main"
-// packages, from the list of packages given. The list of packages can
-// include relative paths, the special "..." Go keyword, etc.
-func GoMainDirs(packages []string) ([]string, error) {
+// GoMainDirs returns the packages and file paths for the packages that
+// are "main" packages, from the list of packages given. The list of packages
+// can include relative paths, the special "..." Go keyword, etc.
+//
+// If test is true, GoMainDirs returns all matching packages.
+func GoMainDirs(packages []string, test bool) ([][]string, error) {
 	args := make([]string, 0, len(packages)+3)
 	args = append(args, "list", "-f", "{{.Name}}|{{.ImportPath}}")
 	args = append(args, packages...)
@@ -80,7 +93,7 @@ func GoMainDirs(packages []string) ([]string, error) {
 		return nil, err
 	}
 
-	results := make([]string, 0, len(output))
+	results := make([][]string, 0, len(output))
 	for _, line := range strings.Split(output, "\n") {
 		if line == "" {
 			continue
@@ -92,8 +105,8 @@ func GoMainDirs(packages []string) ([]string, error) {
 			continue
 		}
 
-		if parts[0] == "main" {
-			results = append(results, parts[1])
+		if parts[0] == "main" || test {
+			results = append(results, parts)
 		}
 	}
 
@@ -151,6 +164,16 @@ func execGo(env []string, dir string, args ...string) (string, error) {
 	}
 
 	return stdout.String(), nil
+}
+
+func renameTestExecutable(pkg string, platform Platform) error {
+	originalName := fmt.Sprintf("%s.test", pkg)
+	newName := fmt.Sprintf("%s_%s_%s.test", pkg, platform.OS, platform.Arch)
+	if platform.OS == "windows" {
+		originalName = fmt.Sprintf("%s.exe", originalName)
+		newName = fmt.Sprintf("%s.exe", newName)
+	}
+	return os.Rename(originalName, newName)
 }
 
 const versionSource = `package main
