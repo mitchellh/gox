@@ -22,6 +22,7 @@ func realMain() int {
 	var parallel int
 	var platformFlag PlatformFlag
 	var tags string
+	var test bool
 	var verbose bool
 	flags := flag.NewFlagSet("gox", flag.ExitOnError)
 	flags.Usage = func() { printUsage() }
@@ -33,6 +34,7 @@ func realMain() int {
 	flags.StringVar(&outputTpl, "output", "{{.Dir}}_{{.OS}}_{{.Arch}}", "output path")
 	flags.IntVar(&parallel, "parallel", -1, "parallelization factor")
 	flags.BoolVar(&buildToolchain, "build-toolchain", false, "build toolchain")
+	flags.BoolVar(&test, "test", false, "set to true to build tests intead of main program")
 	flags.BoolVar(&verbose, "verbose", false, "verbose")
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		flags.Usage()
@@ -43,6 +45,11 @@ func realMain() int {
 	// number of CPUs is <= 0 is specified.
 	if parallel <= 0 {
 		parallel = runtime.NumCPU()
+	}
+
+	if parallel > 1 && test {
+		fmt.Println("Disabling parallel builds when building tests")
+		parallel = 1
 	}
 
 	if buildToolchain {
@@ -68,7 +75,7 @@ func realMain() int {
 	}
 
 	// Get the packages that are in the given paths
-	mainDirs, err := GoMainDirs(packages)
+	mainDirs, err := GoMainDirs(packages, test)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error reading packages: %s", err)
 		return 1
@@ -90,14 +97,16 @@ func realMain() int {
 	errors := make([]string, 0)
 	semaphore := make(chan int, parallel)
 	for _, platform := range platforms {
-		for _, path := range mainDirs {
+		for _, pkgAndPath := range mainDirs {
+			pkg := pkgAndPath[0]
+			path := pkgAndPath[1]
 			// Start the goroutine that will do the actual build
 			wg.Add(1)
 			go func(path string, platform Platform) {
 				defer wg.Done()
 				semaphore <- 1
 				fmt.Printf("--> %15s: %s\n", platform.String(), path)
-				if err := GoCrossCompile(path, platform, outputTpl, ldflags, tags); err != nil {
+				if err := GoCrossCompile(pkg, path, platform, outputTpl, ldflags, tags, test); err != nil {
 					errorLock.Lock()
 					defer errorLock.Unlock()
 					errors = append(errors,
