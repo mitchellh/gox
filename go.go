@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
+	"runtime"
 	"strings"
 	"text/template"
 )
@@ -55,7 +57,13 @@ func GoCrossCompile(packagePath string, platform Platform, outputTpl string, ldf
 	// directory to build.
 	chdir := ""
 	if packagePath[0] == '_' {
-		chdir = packagePath[1:]
+		if runtime.GOOS == "windows" {
+			re := regexp.MustCompile("^/([a-zA-Z])_/")
+			chdir = re.ReplaceAllString(packagePath[1:], "$1:\\")
+			chdir = strings.Replace(chdir, "/", "\\", -1)
+		} else {
+			chdir = packagePath[1:]
+		}
 		packagePath = ""
 	}
 
