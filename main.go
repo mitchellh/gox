@@ -23,6 +23,7 @@ func realMain() int {
 	var platformFlag PlatformFlag
 	var tags string
 	var verbose bool
+	var rebuild bool
 	flags := flag.NewFlagSet("gox", flag.ExitOnError)
 	flags.Usage = func() { printUsage() }
 	flags.Var(platformFlag.ArchFlagValue(), "arch", "arch to build for or skip")
@@ -34,6 +35,7 @@ func realMain() int {
 	flags.IntVar(&parallel, "parallel", -1, "parallelization factor")
 	flags.BoolVar(&buildToolchain, "build-toolchain", false, "build toolchain")
 	flags.BoolVar(&verbose, "verbose", false, "verbose")
+	flags.BoolVar(&rebuild, "a", false, "force rebuilding of packages that are already up-to-date")
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		flags.Usage()
 		return 1
@@ -97,7 +99,7 @@ func realMain() int {
 				defer wg.Done()
 				semaphore <- 1
 				fmt.Printf("--> %15s: %s\n", platform.String(), path)
-				if err := GoCrossCompile(path, platform, outputTpl, ldflags, tags); err != nil {
+				if err := GoCrossCompile(path, platform, outputTpl, ldflags, tags, rebuild); err != nil {
 					errorLock.Lock()
 					defer errorLock.Unlock()
 					errors = append(errors,
@@ -133,6 +135,7 @@ const helpText = `Usage: gox [options] [packages]
 
 Options:
 
+  -a                  Force rebuilding of packages that are already up-to-date
   -arch=""            Space-separated list of architectures to build for
   -build-toolchain    Build cross-compilation toolchain
   -ldflags=""         Additional '-ldflags' value to pass to go build
