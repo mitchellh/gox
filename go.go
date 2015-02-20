@@ -19,25 +19,37 @@ type OutputTemplateData struct {
 }
 
 // GoCrossCompile
-func GoCrossCompile(packagePath string, platform Platform, outputTpl string, ldflags string, tags string) error {
+func GoCrossCompile(packagePath string, platform Platform, outputTpl string, ldTpl string, tags string) error {
 	env := append(os.Environ(),
 		"GOOS="+platform.OS,
 		"GOARCH="+platform.Arch)
 
-	var outputPath bytes.Buffer
-	tpl, err := template.New("output").Parse(outputTpl)
+	var outputPath, ldFlags bytes.Buffer
+	tplPath, err := template.New("output").Parse(outputTpl)
 	if err != nil {
 		return err
 	}
-	tplData := OutputTemplateData{
+	tplFlags, err := template.New("ldflags").Parse(ldTpl)
+	if err != nil {
+		return err
+	}
+	tplPathData := OutputTemplateData{
 		Dir:  filepath.Base(packagePath),
 		OS:   platform.OS,
 		Arch: platform.Arch,
 	}
-	if err := tpl.Execute(&outputPath, &tplData); err != nil {
+	tplFlagsData := OutputTemplateData{
+		Dir:  filepath.Base(packagePath),
+		OS:   platform.OS,
+		Arch: platform.Arch,
+	}
+	if err := tplPath.Execute(&outputPath, &tplPathData); err != nil {
 		return err
 	}
-
+	if err := tplFlags.Execute(&ldFlags, &tplFlagsData); err != nil {
+		return err
+	}
+	ldFlagsReal := ldFlags.String()
 	if platform.OS == "windows" {
 		outputPath.WriteString(".exe")
 	}
@@ -60,7 +72,7 @@ func GoCrossCompile(packagePath string, platform Platform, outputTpl string, ldf
 	}
 
 	_, err = execGo(env, chdir, "build",
-		"-ldflags", ldflags,
+		"-ldflags", ldFlagsReal,
 		"-tags", tags,
 		"-o", outputPathReal,
 		packagePath)
