@@ -58,6 +58,11 @@ var (
 		{"dragonfly", "amd64"},
 		{"solaris", "amd64"},
 	}...)
+
+	Platforms_1_4 = append(Platforms_1_3, []Platform{
+		{"android", "arm"},
+		{"plan9", "amd64"},
+	}...)
 )
 
 // SupportedPlatforms returns the full list of supported platforms for
@@ -68,7 +73,7 @@ func SupportedPlatforms(v string) []Platform {
 		"go1.1": Platforms_1_1,
 		"go1.2": Platforms_1_1,
 		"go1.3": Platforms_1_3,
-		"go1.4": Platforms_1_3,
+		"go1.4": Platforms_1_4,
 	}
 
 	supported, ok := supportMap[v[0:5]]
