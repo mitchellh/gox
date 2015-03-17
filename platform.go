@@ -1,9 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"strings"
-)
+import "fmt"
 
 // Platform is a combination of OS/arch that can be built against.
 type Platform struct {
@@ -61,16 +58,30 @@ var (
 		{"dragonfly", "amd64"},
 		{"solaris", "amd64"},
 	}...)
+
+	Platforms_1_4 = append(Platforms_1_3, []Platform{
+		{"android", "arm"},
+		{"plan9", "amd64"},
+	}...)
 )
 
 // SupportedPlatforms returns the full list of supported platforms for
 // the version of Go that is
 func SupportedPlatforms(v string) []Platform {
-	if strings.HasPrefix(v, "go1.0") {
-		return Platforms_1_0
-	} else if strings.HasPrefix(v, "go1.3") {
-		return Platforms_1_3
+	supportMap := map[string][]Platform{
+		"go1.0": Platforms_1_0,
+		"go1.1": Platforms_1_1,
+		"go1.2": Platforms_1_1,
+		"go1.3": Platforms_1_3,
+		"go1.4": Platforms_1_4,
 	}
 
-	return Platforms_1_1
+	supported, ok := supportMap[v[0:5]]
+
+	if ok == true {
+		return supported
+	} else {
+		return Platforms_1_1
+
+	}
 }
