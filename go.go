@@ -24,7 +24,7 @@ func GoCrossCompile(packagePath string, platform Platform, outputTpl string, ldf
 		"GOOS="+platform.OS,
 		"GOARCH="+platform.Arch)
 	if cgo {
-		env = append(os.Environ(),
+		env = append(env,
 			"CGO_ENABLED=1")
 	}
 

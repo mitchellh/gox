@@ -144,7 +144,7 @@ Options:
   -osarch=""          Space-separated list of os/arch pairs to build for
   -output="foo"       Output path template. See below for more info
   -parallel=-1        Amount of parallelism, defaults to number of CPUs
-  -cgo            	  Enable CGO - required as of 1.4 when there are C files.
+  -cgo                Sets CGO_ENABLED=1 - required as of 1.4 when there are C files.
   -verbose            Verbose mode
 
 Output path template:
