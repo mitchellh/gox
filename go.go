@@ -19,10 +19,14 @@ type OutputTemplateData struct {
 }
 
 // GoCrossCompile
-func GoCrossCompile(packagePath string, platform Platform, outputTpl string, ldflags string, tags string) error {
+func GoCrossCompile(packagePath string, platform Platform, outputTpl string, ldflags string, tags string, cgo bool) error {
 	env := append(os.Environ(),
 		"GOOS="+platform.OS,
 		"GOARCH="+platform.Arch)
+	if cgo {
+		env = append(env,
+			"CGO_ENABLED=1")
+	}
 
 	var outputPath bytes.Buffer
 	tpl, err := template.New("output").Parse(outputTpl)

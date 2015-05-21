@@ -22,7 +22,9 @@ func realMain() int {
 	var parallel int
 	var platformFlag PlatformFlag
 	var tags string
+	var cgo bool
 	var verbose bool
+
 	flags := flag.NewFlagSet("gox", flag.ExitOnError)
 	flags.Usage = func() { printUsage() }
 	flags.Var(platformFlag.ArchFlagValue(), "arch", "arch to build for or skip")
@@ -33,6 +35,7 @@ func realMain() int {
 	flags.StringVar(&outputTpl, "output", "{{.Dir}}_{{.OS}}_{{.Arch}}", "output path")
 	flags.IntVar(&parallel, "parallel", -1, "parallelization factor")
 	flags.BoolVar(&buildToolchain, "build-toolchain", false, "build toolchain")
+	flags.BoolVar(&cgo, "cgo", false, "cgo")
 	flags.BoolVar(&verbose, "verbose", false, "verbose")
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		flags.Usage()
@@ -97,7 +100,7 @@ func realMain() int {
 				defer wg.Done()
 				semaphore <- 1
 				fmt.Printf("--> %15s: %s\n", platform.String(), path)
-				if err := GoCrossCompile(path, platform, outputTpl, ldflags, tags); err != nil {
+				if err := GoCrossCompile(path, platform, outputTpl, ldflags, tags, cgo); err != nil {
 					errorLock.Lock()
 					defer errorLock.Unlock()
 					errors = append(errors,
@@ -141,6 +144,7 @@ Options:
   -osarch=""          Space-separated list of os/arch pairs to build for
   -output="foo"       Output path template. See below for more info
   -parallel=-1        Amount of parallelism, defaults to number of CPUs
+  -cgo                Sets CGO_ENABLED=1 - required as of 1.4 when there are C files.
   -verbose            Verbose mode
 
 Output path template:

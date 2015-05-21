@@ -61,6 +61,12 @@ var (
 		{"dragonfly", "amd64"},
 		{"solaris", "amd64"},
 	}...)
+
+	// Platforms_1_4 adds support for ARM processors on Android
+	// and Native Client (NaCl) and for AMD64 on Plan 9.
+	Platforms_1_4 = append(Platforms_1_3, []Platform{
+		{"plan9", "amd64"},
+	}...)
 )
 
 // SupportedPlatforms returns the full list of supported platforms for
@@ -70,6 +76,8 @@ func SupportedPlatforms(v string) []Platform {
 		return Platforms_1_0
 	} else if strings.HasPrefix(v, "go1.3") {
 		return Platforms_1_3
+	} else if strings.HasPrefix(v, "go1.4") {
+		return Platforms_1_4
 	}
 
 	return Platforms_1_1
