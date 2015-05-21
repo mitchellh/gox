@@ -3,13 +3,14 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/mitchellh/iochan"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
 	"sync"
+
+	"github.com/mitchellh/iochan"
 )
 
 // The "main" method for when the toolchain build is requested.
@@ -50,7 +51,7 @@ func mainBuildToolchain(parallel int, platformFlag PlatformFlag, verbose bool) i
 
 	var errorLock sync.Mutex
 	var wg sync.WaitGroup
-	errs := make([]error, 0)
+	var errs []error
 	semaphore := make(chan int, parallel)
 	for _, platform := range platforms {
 		wg.Add(1)
