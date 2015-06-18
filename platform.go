@@ -70,6 +70,7 @@ var (
 	}...)
 
 	Platforms_1_4 = append(Platforms_1_3, []Platform{
+		{"android", "arm", false},
 		{"plan9", "amd64", false},
 	}...)
 )
