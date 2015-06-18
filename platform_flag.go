@@ -185,10 +185,6 @@ func (s *appendPlatformValue) String() string {
 }
 
 func (s *appendPlatformValue) Set(value string) error {
-	if *s == nil {
-		*s = make([]Platform, 0, 1)
-	}
-
 	if value == "" {
 		return nil
 	}
