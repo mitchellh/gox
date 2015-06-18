@@ -231,10 +231,6 @@ func (s *appendStringValue) String() string {
 }
 
 func (s *appendStringValue) Set(value string) error {
-	if *s == nil {
-		*s = make([]string, 0, 1)
-	}
-
 	for _, v := range strings.Split(value, " ") {
 		if v != "" {
 			s.appendIfMissing(strings.ToLower(v))
