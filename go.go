@@ -26,6 +26,7 @@ type CompileOpts struct {
 	OutputTpl   string
 	Ldflags     string
 	Tags        string
+	Cgo         bool
 }
 
 // GoCrossCompile
@@ -33,6 +34,9 @@ func GoCrossCompile(opts *CompileOpts) error {
 	env := append(os.Environ(),
 		"GOOS="+opts.Platform.OS,
 		"GOARCH="+opts.Platform.Arch)
+	if opts.Cgo {
+		env = append(env, "CGO_ENABLED=1")
+	}
 
 	var outputPath bytes.Buffer
 	tpl, err := template.New("output").Parse(opts.OutputTpl)

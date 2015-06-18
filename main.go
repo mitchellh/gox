@@ -23,7 +23,7 @@ func realMain() int {
 	var platformFlag PlatformFlag
 	var tags string
 	var verbose bool
-	var flagListOSArch bool
+	var flagCgo, flagListOSArch bool
 	flags := flag.NewFlagSet("gox", flag.ExitOnError)
 	flags.Usage = func() { printUsage() }
 	flags.Var(platformFlag.ArchFlagValue(), "arch", "arch to build for or skip")
@@ -35,6 +35,7 @@ func realMain() int {
 	flags.IntVar(&parallel, "parallel", -1, "parallelization factor")
 	flags.BoolVar(&buildToolchain, "build-toolchain", false, "build toolchain")
 	flags.BoolVar(&verbose, "verbose", false, "verbose")
+	flags.BoolVar(&flagCgo, "cgo", false, "")
 	flags.BoolVar(&flagListOSArch, "osarch-list", false, "")
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		flags.Usage()
@@ -110,6 +111,7 @@ func realMain() int {
 					OutputTpl:   outputTpl,
 					Ldflags:     ldflags,
 					Tags:        tags,
+					Cgo:         flagCgo,
 				}
 				if err := GoCrossCompile(opts); err != nil {
 					errorLock.Lock()
