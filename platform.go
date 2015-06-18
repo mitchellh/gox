@@ -66,6 +66,9 @@ var (
 	Platforms_1_3 = append(Platforms_1_1, []Platform{
 		{"dragonfly", "386", false},
 		{"dragonfly", "amd64", false},
+		{"nacl", "amd64", false},
+		{"nacl", "amd64p32", false},
+		{"nacl", "arm", false},
 		{"solaris", "amd64", false},
 	}...)
 
