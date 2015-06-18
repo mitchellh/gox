@@ -25,6 +25,7 @@ type CompileOpts struct {
 	Platform    Platform
 	OutputTpl   string
 	Ldflags     string
+	Gcflags     string
 	Tags        string
 	Cgo         bool
 }
@@ -89,6 +90,7 @@ func GoCrossCompile(opts *CompileOpts) error {
 	}
 
 	_, err = execGo(env, chdir, "build",
+		"-gcflags", opts.Gcflags,
 		"-ldflags", opts.Ldflags,
 		"-tags", opts.Tags,
 		"-o", outputPathReal,

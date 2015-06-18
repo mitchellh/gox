@@ -23,6 +23,7 @@ func realMain() int {
 	var platformFlag PlatformFlag
 	var tags string
 	var verbose bool
+	var flagGcflags string
 	var flagCgo, flagListOSArch bool
 	flags := flag.NewFlagSet("gox", flag.ExitOnError)
 	flags.Usage = func() { printUsage() }
@@ -37,6 +38,7 @@ func realMain() int {
 	flags.BoolVar(&verbose, "verbose", false, "verbose")
 	flags.BoolVar(&flagCgo, "cgo", false, "")
 	flags.BoolVar(&flagListOSArch, "osarch-list", false, "")
+	flags.StringVar(&flagGcflags, "gcflags", "", "")
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		flags.Usage()
 		return 1
@@ -152,6 +154,7 @@ Options:
   -arch=""            Space-separated list of architectures to build for
   -build-toolchain    Build cross-compilation toolchain
   -cgo                Sets CGO_ENABLED=1, requires proper C toolchain (advanced)
+  -gcflags=""         Additional '-gcflags' value to pass to go build
   -ldflags=""         Additional '-ldflags' value to pass to go build
   -tags=""            Additional '-tags' value to pass to go build
   -os=""              Space-separated list of operating systems to build for
