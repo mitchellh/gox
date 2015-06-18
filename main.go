@@ -23,6 +23,7 @@ func realMain() int {
 	var platformFlag PlatformFlag
 	var tags string
 	var verbose bool
+	var flagListOSArch bool
 	flags := flag.NewFlagSet("gox", flag.ExitOnError)
 	flags.Usage = func() { printUsage() }
 	flags.Var(platformFlag.ArchFlagValue(), "arch", "arch to build for or skip")
@@ -34,6 +35,7 @@ func realMain() int {
 	flags.IntVar(&parallel, "parallel", -1, "parallelization factor")
 	flags.BoolVar(&buildToolchain, "build-toolchain", false, "build toolchain")
 	flags.BoolVar(&verbose, "verbose", false, "verbose")
+	flags.BoolVar(&flagListOSArch, "osarch-list", false, "")
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		flags.Usage()
 		return 1
@@ -58,6 +60,10 @@ func realMain() int {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error reading Go version: %s", err)
 		return 1
+	}
+
+	if flagListOSArch {
+		return mainListOSArch(version)
 	}
 
 	// Determine the packages that we want to compile. Default to the
@@ -139,6 +145,7 @@ Options:
   -tags=""            Additional '-tags' value to pass to go build
   -os=""              Space-separated list of operating systems to build for
   -osarch=""          Space-separated list of os/arch pairs to build for
+  -osarch-list        List supported os/arch pairs for your Go version
   -output="foo"       Output path template. See below for more info
   -parallel=-1        Amount of parallelism, defaults to number of CPUs
   -verbose            Verbose mode
