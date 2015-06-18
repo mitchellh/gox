@@ -20,13 +20,13 @@ func TestPlatformFlagPlatforms(t *testing.T) {
 			[]string{"baz"},
 			[]Platform{},
 			[]Platform{
-				{"foo", "baz"},
-				{"bar", "baz"},
-				{"boo", "bop"},
+				{"foo", "baz", true},
+				{"bar", "baz", true},
+				{"boo", "bop", true},
 			},
 			[]Platform{
-				{"foo", "baz"},
-				{"bar", "baz"},
+				{"foo", "baz", false},
+				{"bar", "baz", false},
 			},
 		},
 
@@ -36,12 +36,12 @@ func TestPlatformFlagPlatforms(t *testing.T) {
 			[]string{},
 			[]Platform{},
 			[]Platform{
-				{"foo", "bar"},
-				{"foo", "baz"},
-				{"bar", "bar"},
+				{"foo", "bar", true},
+				{"foo", "baz", true},
+				{"bar", "bar", true},
 			},
 			[]Platform{
-				{"bar", "bar"},
+				{"bar", "bar", false},
 			},
 		},
 
@@ -51,13 +51,13 @@ func TestPlatformFlagPlatforms(t *testing.T) {
 			[]string{},
 			[]Platform{},
 			[]Platform{
-				{"foo", "bar"},
-				{"foo", "baz"},
-				{"bar", "bar"},
+				{"foo", "bar", true},
+				{"foo", "baz", true},
+				{"bar", "bar", true},
 			},
 			[]Platform{
-				{"foo", "bar"},
-				{"foo", "baz"},
+				{"foo", "bar", false},
+				{"foo", "baz", false},
 			},
 		},
 
@@ -67,13 +67,13 @@ func TestPlatformFlagPlatforms(t *testing.T) {
 			[]string{"baz"},
 			[]Platform{},
 			[]Platform{
-				{"foo", "bar"},
-				{"foo", "baz"},
-				{"bar", "baz"},
-				{"baz", "bar"},
+				{"foo", "bar", true},
+				{"foo", "baz", true},
+				{"bar", "baz", true},
+				{"baz", "bar", true},
 			},
 			[]Platform{
-				{"bar", "baz"},
+				{"bar", "baz", false},
 			},
 		},
 
@@ -83,11 +83,11 @@ func TestPlatformFlagPlatforms(t *testing.T) {
 			[]string{"baz"},
 			[]Platform{},
 			[]Platform{
-				{"foo", "baz"},
-				{"bar", "what"},
+				{"foo", "baz", true},
+				{"bar", "what", true},
 			},
 			[]Platform{
-				{"foo", "baz"},
+				{"foo", "baz", false},
 			},
 		},
 
@@ -96,15 +96,15 @@ func TestPlatformFlagPlatforms(t *testing.T) {
 			[]string{},
 			[]string{},
 			[]Platform{
-				{"foo", "baz"},
-				{"foo", "bar"},
+				{"foo", "baz", true},
+				{"foo", "bar", true},
 			},
 			[]Platform{
-				{"foo", "baz"},
-				{"bar", "what"},
+				{"foo", "baz", true},
+				{"bar", "what", true},
 			},
 			[]Platform{
-				{"foo", "baz"},
+				{"foo", "baz", false},
 			},
 		},
 
@@ -113,14 +113,14 @@ func TestPlatformFlagPlatforms(t *testing.T) {
 			[]string{},
 			[]string{},
 			[]Platform{
-				{"!foo", "baz"},
+				{"!foo", "baz", true},
 			},
 			[]Platform{
-				{"foo", "baz"},
-				{"bar", "what"},
+				{"foo", "baz", true},
+				{"bar", "what", true},
 			},
 			[]Platform{
-				{"bar", "what"},
+				{"bar", "what", false},
 			},
 		},
 
@@ -129,17 +129,48 @@ func TestPlatformFlagPlatforms(t *testing.T) {
 			[]string{"foo", "bar"},
 			[]string{"bar"},
 			[]Platform{
-				{"foo", "baz"},
-				{"!bar", "bar"},
+				{"foo", "baz", true},
+				{"!bar", "bar", true},
 			},
 			[]Platform{
-				{"foo", "bar"},
-				{"foo", "baz"},
-				{"bar", "bar"},
+				{"foo", "bar", true},
+				{"foo", "baz", true},
+				{"bar", "bar", true},
 			},
 			[]Platform{
-				{"foo", "baz"},
-				{"foo", "bar"},
+				{"foo", "baz", false},
+				{"foo", "bar", false},
+			},
+		},
+
+		// Ignores non-default
+		{
+			[]string{},
+			[]string{},
+			[]Platform{},
+			[]Platform{
+				{"foo", "bar", true},
+				{"foo", "baz", true},
+				{"bar", "bar", false},
+			},
+			[]Platform{
+				{"foo", "bar", false},
+				{"foo", "baz", false},
+			},
+		},
+
+		// Adds non-default by OS
+		{
+			[]string{"bar"},
+			[]string{"bar"},
+			[]Platform{},
+			[]Platform{
+				{"foo", "bar", true},
+				{"foo", "baz", true},
+				{"bar", "bar", false},
+			},
+			[]Platform{
+				{"bar", "bar", false},
 			},
 		},
 	}
@@ -178,7 +209,7 @@ func TestPlatformFlagOSArchFlagValue(t *testing.T) {
 		t.Fatalf("err: %s", err)
 	}
 
-	expected := []Platform{{"foo", "bar"}}
+	expected := []Platform{{"foo", "bar", false}}
 	if !reflect.DeepEqual(f.OSArch, expected) {
 		t.Fatalf("bad: %#v", f.OSArch)
 	}
@@ -225,8 +256,8 @@ func TestAppendPlatformValue(t *testing.T) {
 	}
 
 	expected := []Platform{
-		{"windows", "arm"},
-		{"windows", "386"},
+		{"windows", "arm", false},
+		{"windows", "386", false},
 	}
 	if !reflect.DeepEqual([]Platform(value), expected) {
 		t.Fatalf("bad: %#v", value)

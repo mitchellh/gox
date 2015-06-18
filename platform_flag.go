@@ -26,8 +26,8 @@ func (p *PlatformFlag) Platforms(supported []Platform) []Platform {
 	includeArch := make(map[string]struct{})
 	ignoreOS := make(map[string]struct{})
 	includeOS := make(map[string]struct{})
-	ignoreOSArch := make(map[Platform]struct{})
-	includeOSArch := make(map[Platform]struct{})
+	ignoreOSArch := make(map[string]Platform)
+	includeOSArch := make(map[string]Platform)
 	for _, v := range p.Arch {
 		if v[0] == '!' {
 			ignoreArch[v[1:]] = struct{}{}
@@ -49,9 +49,9 @@ func (p *PlatformFlag) Platforms(supported []Platform) []Platform {
 				Arch: v.Arch,
 			}
 
-			ignoreOSArch[v] = struct{}{}
+			ignoreOSArch[v.String()] = v
 		} else {
-			includeOSArch[v] = struct{}{}
+			includeOSArch[v.String()] = v
 		}
 	}
 
@@ -60,8 +60,8 @@ func (p *PlatformFlag) Platforms(supported []Platform) []Platform {
 	var prefilter []Platform = nil
 	if len(includeOSArch) > 0 {
 		prefilter = make([]Platform, 0, len(p.Arch)*len(p.OS)+len(includeOSArch))
-		for k, _ := range includeOSArch {
-			prefilter = append(prefilter, k)
+		for _, v := range includeOSArch {
+			prefilter = append(prefilter, v)
 		}
 	}
 
@@ -81,7 +81,10 @@ func (p *PlatformFlag) Platforms(supported []Platform) []Platform {
 					continue
 				}
 
-				prefilter = append(prefilter, Platform{os, arch})
+				prefilter = append(prefilter, Platform{
+					OS:   os,
+					Arch: arch,
+				})
 			}
 		}
 	}
@@ -92,14 +95,16 @@ func (p *PlatformFlag) Platforms(supported []Platform) []Platform {
 		for _, pending := range prefilter {
 			found := false
 			for _, platform := range supported {
-				if pending == platform {
+				if pending.String() == platform.String() {
 					found = true
 					break
 				}
 			}
 
 			if found {
-				result = append(result, pending)
+				add := pending
+				add.Default = false
+				result = append(result, add)
 			}
 		}
 
@@ -107,14 +112,21 @@ func (p *PlatformFlag) Platforms(supported []Platform) []Platform {
 	}
 
 	if prefilter == nil {
-		prefilter = supported
+		prefilter = make([]Platform, 0, len(supported))
+		for _, v := range supported {
+			if v.Default {
+				add := v
+				add.Default = false
+				prefilter = append(prefilter, add)
+			}
+		}
 	}
 
 	// Go through each default platform and filter out the bad ones
 	result := make([]Platform, 0, len(prefilter))
 	for _, platform := range prefilter {
 		if len(ignoreOSArch) > 0 {
-			if _, ok := ignoreOSArch[platform]; ok {
+			if _, ok := ignoreOSArch[platform.String()]; ok {
 				continue
 			}
 		}
@@ -123,7 +135,7 @@ func (p *PlatformFlag) Platforms(supported []Platform) []Platform {
 		// specifically ask to include it via the osarch.
 		checkComponents := true
 		if len(includeOSArch) > 0 {
-			if _, ok := includeOSArch[platform]; ok {
+			if _, ok := includeOSArch[platform.String()]; ok {
 				checkComponents = false
 			}
 		}
