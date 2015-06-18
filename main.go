@@ -103,7 +103,15 @@ func realMain() int {
 				defer wg.Done()
 				semaphore <- 1
 				fmt.Printf("--> %15s: %s\n", platform.String(), path)
-				if err := GoCrossCompile(path, platform, outputTpl, ldflags, tags); err != nil {
+
+				opts := &CompileOpts{
+					PackagePath: path,
+					Platform:    platform,
+					OutputTpl:   outputTpl,
+					Ldflags:     ldflags,
+					Tags:        tags,
+				}
+				if err := GoCrossCompile(opts); err != nil {
 					errorLock.Lock()
 					defer errorLock.Unlock()
 					errors = append(errors,

@@ -20,27 +20,35 @@ type OutputTemplateData struct {
 	Arch string
 }
 
+type CompileOpts struct {
+	PackagePath string
+	Platform    Platform
+	OutputTpl   string
+	Ldflags     string
+	Tags        string
+}
+
 // GoCrossCompile
-func GoCrossCompile(packagePath string, platform Platform, outputTpl string, ldflags string, tags string) error {
+func GoCrossCompile(opts *CompileOpts) error {
 	env := append(os.Environ(),
-		"GOOS="+platform.OS,
-		"GOARCH="+platform.Arch)
+		"GOOS="+opts.Platform.OS,
+		"GOARCH="+opts.Platform.Arch)
 
 	var outputPath bytes.Buffer
-	tpl, err := template.New("output").Parse(outputTpl)
+	tpl, err := template.New("output").Parse(opts.OutputTpl)
 	if err != nil {
 		return err
 	}
 	tplData := OutputTemplateData{
-		Dir:  filepath.Base(packagePath),
-		OS:   platform.OS,
-		Arch: platform.Arch,
+		Dir:  filepath.Base(opts.PackagePath),
+		OS:   opts.Platform.OS,
+		Arch: opts.Platform.Arch,
 	}
 	if err := tpl.Execute(&outputPath, &tplData); err != nil {
 		return err
 	}
 
-	if platform.OS == "windows" {
+	if opts.Platform.OS == "windows" {
 		outputPath.WriteString(".exe")
 	}
 
@@ -56,7 +64,7 @@ func GoCrossCompile(packagePath string, platform Platform, outputTpl string, ldf
 	// the GOPATH.For this, we just drop it since we move to that
 	// directory to build.
 	chdir := ""
-	if packagePath[0] == '_' {
+	if opts.PackagePath[0] == '_' {
 		if runtime.GOOS == "windows" {
 			// We have to replace weird paths like this:
 			//
@@ -67,19 +75,20 @@ func GoCrossCompile(packagePath string, platform Platform, outputTpl string, ldf
 			//   c:\Users
 			//
 			re := regexp.MustCompile("^/([a-zA-Z])_/")
-			chdir = re.ReplaceAllString(packagePath[1:], "$1:\\")
+			chdir = re.ReplaceAllString(opts.PackagePath[1:], "$1:\\")
 			chdir = strings.Replace(chdir, "/", "\\", -1)
 		} else {
-			chdir = packagePath[1:]
+			chdir = opts.PackagePath[1:]
 		}
-		packagePath = ""
+
+		opts.PackagePath = ""
 	}
 
 	_, err = execGo(env, chdir, "build",
-		"-ldflags", ldflags,
-		"-tags", tags,
+		"-ldflags", opts.Ldflags,
+		"-tags", opts.Tags,
 		"-o", outputPathReal,
-		packagePath)
+		opts.PackagePath)
 	return err
 }
 
