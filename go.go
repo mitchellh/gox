@@ -28,6 +28,7 @@ type CompileOpts struct {
 	Gcflags     string
 	Tags        string
 	Cgo         bool
+	Rebuild     bool
 }
 
 // GoCrossCompile
@@ -89,12 +90,18 @@ func GoCrossCompile(opts *CompileOpts) error {
 		opts.PackagePath = ""
 	}
 
-	_, err = execGo(env, chdir, "build",
+	args := []string{"build"}
+	if opts.Rebuild {
+		args = append(args, "-a")
+	}
+	args = append(args,
 		"-gcflags", opts.Gcflags,
 		"-ldflags", opts.Ldflags,
 		"-tags", opts.Tags,
 		"-o", outputPathReal,
 		opts.PackagePath)
+
+	_, err = execGo(env, chdir, args...)
 	return err
 }
 

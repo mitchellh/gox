@@ -24,7 +24,7 @@ func realMain() int {
 	var tags string
 	var verbose bool
 	var flagGcflags string
-	var flagCgo, flagListOSArch bool
+	var flagCgo, flagRebuild, flagListOSArch bool
 	flags := flag.NewFlagSet("gox", flag.ExitOnError)
 	flags.Usage = func() { printUsage() }
 	flags.Var(platformFlag.ArchFlagValue(), "arch", "arch to build for or skip")
@@ -37,6 +37,7 @@ func realMain() int {
 	flags.BoolVar(&buildToolchain, "build-toolchain", false, "build toolchain")
 	flags.BoolVar(&verbose, "verbose", false, "verbose")
 	flags.BoolVar(&flagCgo, "cgo", false, "")
+	flags.BoolVar(&flagRebuild, "rebuild", false, "")
 	flags.BoolVar(&flagListOSArch, "osarch-list", false, "")
 	flags.StringVar(&flagGcflags, "gcflags", "", "")
 	if err := flags.Parse(os.Args[1:]); err != nil {
@@ -114,6 +115,7 @@ func realMain() int {
 					Ldflags:     ldflags,
 					Tags:        tags,
 					Cgo:         flagCgo,
+					Rebuild:     flagRebuild,
 				}
 				if err := GoCrossCompile(opts); err != nil {
 					errorLock.Lock()
@@ -162,6 +164,7 @@ Options:
   -osarch-list        List supported os/arch pairs for your Go version
   -output="foo"       Output path template. See below for more info
   -parallel=-1        Amount of parallelism, defaults to number of CPUs
+  -rebuild            Force rebuilding of package that were up to date
   -verbose            Verbose mode
 
 Output path template:
