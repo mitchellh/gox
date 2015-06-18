@@ -61,6 +61,10 @@ var (
 		{"dragonfly", "amd64"},
 		{"solaris", "amd64"},
 	}...)
+
+	Platforms_1_4 = append(Platforms_1_3, []Platform{
+		{"plan9", "amd64"},
+	}...)
 )
 
 // SupportedPlatforms returns the full list of supported platforms for
@@ -68,9 +72,14 @@ var (
 func SupportedPlatforms(v string) []Platform {
 	if strings.HasPrefix(v, "go1.0") {
 		return Platforms_1_0
+	} else if strings.HasPrefix(v, "go1.1") {
+		return Platforms_1_1
 	} else if strings.HasPrefix(v, "go1.3") {
 		return Platforms_1_3
+	} else if strings.HasPrefix(v, "go1.4") {
+		return Platforms_1_4
 	}
 
-	return Platforms_1_1
+	// Assume latest
+	return Platforms_1_4
 }
