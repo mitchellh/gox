@@ -58,6 +58,14 @@ func GoCrossCompile(packagePath string, platform Platform, outputTpl string, ldf
 	chdir := ""
 	if packagePath[0] == '_' {
 		if runtime.GOOS == "windows" {
+			// We have to replace weird paths like this:
+			//
+			//   _/c_/Users
+			//
+			// With:
+			//
+			//   c:\Users
+			//
 			re := regexp.MustCompile("^/([a-zA-Z])_/")
 			chdir = re.ReplaceAllString(packagePath[1:], "$1:\\")
 			chdir = strings.Replace(chdir, "/", "\\", -1)
