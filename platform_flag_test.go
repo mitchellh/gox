@@ -162,6 +162,21 @@ func TestPlatformFlagPlatforms(t *testing.T) {
 		// Adds non-default by OS
 		{
 			[]string{"bar"},
+			[]string{},
+			[]Platform{},
+			[]Platform{
+				{"foo", "bar", true},
+				{"foo", "baz", true},
+				{"bar", "bar", false},
+			},
+			[]Platform{
+				{"bar", "bar", false},
+			},
+		},
+
+		// Adds non-default by both
+		{
+			[]string{"bar"},
 			[]string{"bar"},
 			[]Platform{},
 			[]Platform{

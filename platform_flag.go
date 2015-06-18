@@ -87,6 +87,19 @@ func (p *PlatformFlag) Platforms(supported []Platform) []Platform {
 				})
 			}
 		}
+	} else if len(includeOS) > 0 {
+		// Build up the list of prefiltered by what is specified
+		if prefilter == nil {
+			prefilter = make([]Platform, 0, len(p.Arch)*len(p.OS))
+		}
+
+		for _, os := range p.OS {
+			for _, platform := range supported {
+				if platform.OS == os {
+					prefilter = append(prefilter, platform)
+				}
+			}
+		}
 	}
 
 	if prefilter != nil {
