@@ -151,6 +151,7 @@ Options:
 
   -arch=""            Space-separated list of architectures to build for
   -build-toolchain    Build cross-compilation toolchain
+  -cgo                Sets CGO_ENABLED=1, requires proper C toolchain (advanced)
   -ldflags=""         Additional '-ldflags' value to pass to go build
   -tags=""            Additional '-tags' value to pass to go build
   -os=""              Space-separated list of operating systems to build for
