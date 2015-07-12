@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"sync"
 )
 
@@ -52,16 +53,21 @@ func mainBuildToolchain(parallel int, platformFlag PlatformFlag, verbose bool) i
 	var wg sync.WaitGroup
 	errs := make([]error, 0)
 	semaphore := make(chan int, parallel)
+	alreadyProcessed := make(map[string]bool, 0)
 	for _, platform := range platforms {
-		wg.Add(1)
-		go func(platform Platform) {
-			err := buildToolchain(&wg, semaphore, root, platform, verbose)
-			if err != nil {
-				errorLock.Lock()
-				defer errorLock.Unlock()
-				errs = append(errs, fmt.Errorf("%s: %s", platform.String(), err))
-			}
-		}(platform)
+		knownGoArch := knownGoArch(platform.Arch)
+		if _, contains := alreadyProcessed[platform.OS+knownGoArch]; !contains {
+			alreadyProcessed[platform.OS+knownGoArch] = true
+			wg.Add(1)
+			go func(platform Platform) {
+				err := buildToolchain(&wg, semaphore, root, platform, verbose)
+				if err != nil {
+					errorLock.Lock()
+					defer errorLock.Unlock()
+					errs = append(errs, fmt.Errorf("%s: %s", platform.String(), err))
+				}
+			}(platform)
+		}
 	}
 	wg.Wait()
 
@@ -94,7 +100,7 @@ func buildToolchain(wg *sync.WaitGroup, semaphore chan int, root string, platfor
 	cmd := exec.Command(scriptPath, "--no-clean")
 	cmd.Dir = scriptDir
 	cmd.Env = append(os.Environ(),
-		"GOARCH="+platform.Arch,
+		"GOARCH="+knownGoArch(platform.Arch),
 		"GOOS="+platform.OS)
 	cmd.Stderr = &stderr
 	cmd.Stdout = &stdout
@@ -130,4 +136,12 @@ func buildToolchain(wg *sync.WaitGroup, semaphore chan int, root string, platfor
 	}
 
 	return nil
+}
+
+func knownGoArch(goArch string) (result string) {
+	result = goArch
+	if strings.Index(goArch, "arm") == 0 {
+		result = "arm"
+	}
+	return
 }
