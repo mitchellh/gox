@@ -172,6 +172,18 @@ func GoVersion() (string, error) {
 	return execGo(nil, "", "run", sourcePath)
 }
 
+// GoVersionParts parses the version numbers from the version itself
+// into major and minor: 1.5, 1.4, etc.
+func GoVersionParts() (result [2]int, err error) {
+	version, err := GoVersion()
+	if err != nil {
+		return
+	}
+
+	_, err = fmt.Sscanf(version, "go%d.%d", &result[0], &result[1])
+	return
+}
+
 func execGo(env []string, dir string, args ...string) (string, error) {
 	var stderr, stdout bytes.Buffer
 	cmd := exec.Command("go", args...)

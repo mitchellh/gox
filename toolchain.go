@@ -20,6 +20,20 @@ func mainBuildToolchain(parallel int, platformFlag PlatformFlag, verbose bool) i
 		return 1
 	}
 
+	// If we're version 1.5 or greater, then we don't need to do this anymore!
+	versionParts, err := GoVersionParts()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error reading Go version: %s", err)
+		return 1
+	}
+	if versionParts[0] >= 1 && versionParts[1] >= 5 {
+		fmt.Fprintf(
+			os.Stderr,
+			"-build-toolchain is no longer required for Go 1.5 or later.\n"+
+				"You can start using Gox immediately!\n")
+		return 1
+	}
+
 	version, err := GoVersion()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error reading Go version: %s", err)
