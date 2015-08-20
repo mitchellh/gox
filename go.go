@@ -33,12 +33,20 @@ type CompileOpts struct {
 
 // GoCrossCompile
 func GoCrossCompile(opts *CompileOpts) error {
-	env := append(os.Environ(),
-		"GOOS="+opts.Platform.OS,
-		"GOARCH="+opts.Platform.Arch)
-	if opts.Cgo {
-		env = append(env, "CGO_ENABLED=1")
+	customEnv := make([]string, 0)
+	customEnv = append(customEnv, "GOOS="+opts.Platform.OS)
+	if strings.Index(opts.Platform.Arch, "arm") == 0 {
+		customEnv = append(customEnv,
+			"GOARCH=arm",
+			"GOARM="+opts.Platform.Arch[3:])
+	} else {
+		customEnv = append(customEnv, "GOARCH="+opts.Platform.Arch)
 	}
+	if opts.Cgo {
+		customEnv = append(customEnv, "CGO_ENABLED=1")
+	}
+
+	env := append(os.Environ(), customEnv...)
 
 	var outputPath bytes.Buffer
 	tpl, err := template.New("output").Parse(opts.OutputTpl)
@@ -195,6 +203,7 @@ func execGo(env []string, dir string, args ...string) (string, error) {
 	if dir != "" {
 		cmd.Dir = dir
 	}
+
 	if err := cmd.Run(); err != nil {
 		err = fmt.Errorf("%s\nStderr: %s", err, stderr.String())
 		return "", err

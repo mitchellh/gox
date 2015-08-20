@@ -46,7 +46,9 @@ var (
 		{"darwin", "amd64", true},
 		{"linux", "386", true},
 		{"linux", "amd64", true},
-		{"linux", "arm", true},
+		{"linux", "arm5", false},
+		{"linux", "arm6", true},
+		{"linux", "arm7", false},
 		{"freebsd", "386", true},
 		{"freebsd", "amd64", true},
 		{"openbsd", "386", true},
@@ -56,10 +58,14 @@ var (
 	}
 
 	Platforms_1_1 = append(Platforms_1_0, []Platform{
-		{"freebsd", "arm", true},
+		{"freebsd", "arm5", false},
+		{"freebsd", "arm6", true},
+		{"freebsd", "arm7", false},
 		{"netbsd", "386", true},
 		{"netbsd", "amd64", true},
-		{"netbsd", "arm", true},
+		{"netbsd", "arm5", false},
+		{"netbsd", "arm6", true},
+		{"netbsd", "arm7", false},
 		{"plan9", "386", false},
 	}...)
 
@@ -68,12 +74,16 @@ var (
 		{"dragonfly", "amd64", false},
 		{"nacl", "amd64", false},
 		{"nacl", "amd64p32", false},
-		{"nacl", "arm", false},
+		{"nacl", "arm5", false},
+		{"nacl", "arm6", false},
+		{"nacl", "arm7", false},
 		{"solaris", "amd64", false},
 	}...)
 
 	Platforms_1_4 = append(Platforms_1_3, []Platform{
-		{"android", "arm", false},
+		{"android", "arm5", false},
+		{"android", "arm6", false},
+		{"android", "arm7", false},
 		{"plan9", "amd64", false},
 	}...)
 )
