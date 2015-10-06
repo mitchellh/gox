@@ -38,6 +38,8 @@ func GoCrossCompile(opts *CompileOpts) error {
 		"GOARCH="+opts.Platform.Arch)
 	if opts.Cgo {
 		env = append(env, "CGO_ENABLED=1")
+	} else {
+		env = append(env, "CGO_ENABLED=0")
 	}
 
 	var outputPath bytes.Buffer
