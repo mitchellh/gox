@@ -46,9 +46,14 @@ func realMain() int {
 	}
 
 	// Determine what amount of parallelism we want Default to the current
-	// number of CPUs is <= 0 is specified.
+	// number of CPUs-1 is <= 0 is specified.
 	if parallel <= 0 {
-		parallel = runtime.NumCPU()
+		cpus := runtime.NumCPU()
+		if cpus < 2 {
+			parallel = 1
+		} else {
+			parallel = cpus - 1
+		}
 	}
 
 	if buildToolchain {
