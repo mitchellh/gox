@@ -54,6 +54,14 @@ func realMain() int {
 		} else {
 			parallel = cpus - 1
 		}
+
+		// Joyent containers report 48 cores via runtime.NumCPU(), and a
+		// default of 47 parallel builds causes a panic. Default to 3 on
+		// Solaris-derived operating systems unless overridden with the
+		// -parallel flag.
+		if runtime.GOOS == "solaris" {
+			parallel = 3
+		}
 	}
 
 	if buildToolchain {
