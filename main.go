@@ -25,6 +25,7 @@ func realMain() int {
 	var verbose bool
 	var flagGcflags string
 	var flagCgo, flagRebuild, flagListOSArch bool
+	var flagGoCmd string
 	flags := flag.NewFlagSet("gox", flag.ExitOnError)
 	flags.Usage = func() { printUsage() }
 	flags.Var(platformFlag.ArchFlagValue(), "arch", "arch to build for or skip")
@@ -40,6 +41,7 @@ func realMain() int {
 	flags.BoolVar(&flagRebuild, "rebuild", false, "")
 	flags.BoolVar(&flagListOSArch, "osarch-list", false, "")
 	flags.StringVar(&flagGcflags, "gcflags", "", "")
+	flags.StringVar(&flagGoCmd, "gocmd", "go", "")
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		flags.Usage()
 		return 1
@@ -68,8 +70,9 @@ func realMain() int {
 		return mainBuildToolchain(parallel, platformFlag, verbose)
 	}
 
-	if _, err := exec.LookPath("go"); err != nil {
-		fmt.Fprintf(os.Stderr, "go executable must be on the PATH\n")
+	if _, err := exec.LookPath(flagGoCmd); err != nil {
+		fmt.Fprintf(os.Stderr, "%s executable must be on the PATH\n",
+			flagGoCmd)
 		return 1
 	}
 
@@ -91,7 +94,7 @@ func realMain() int {
 	}
 
 	// Get the packages that are in the given paths
-	mainDirs, err := GoMainDirs(packages)
+	mainDirs, err := GoMainDirs(packages, flagGoCmd)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error reading packages: %s", err)
 		return 1
@@ -129,6 +132,7 @@ func realMain() int {
 					Tags:        tags,
 					Cgo:         flagCgo,
 					Rebuild:     flagRebuild,
+					GoCmd:       flagGoCmd,
 				}
 				if err := GoCrossCompile(opts); err != nil {
 					errorLock.Lock()
@@ -177,6 +181,7 @@ Options:
   -osarch-list        List supported os/arch pairs for your Go version
   -output="foo"       Output path template. See below for more info
   -parallel=-1        Amount of parallelism, defaults to number of CPUs
+  -gocmd="go"         Build command, defaults to Go
   -rebuild            Force rebuilding of package that were up to date
   -verbose            Verbose mode
 
