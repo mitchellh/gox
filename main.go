@@ -103,7 +103,7 @@ func realMain() int {
 		fmt.Println("No valid platforms to build for. If you specified a value")
 		fmt.Println("for the 'os', 'arch', or 'osarch' flags, make sure you're")
 		fmt.Println("using a valid value.")
-		return 0
+		return 1
 	}
 
 	// Build in parallel!
