@@ -39,6 +39,7 @@ var (
 		"386",
 		"amd64",
 		"arm",
+		"s390x",
 	}
 
 	Platforms_1_0 = []Platform{
@@ -47,6 +48,7 @@ var (
 		{"linux", "386", true},
 		{"linux", "amd64", true},
 		{"linux", "arm", true},
+		{"linux", "s390x", true},
 		{"freebsd", "386", true},
 		{"freebsd", "amd64", true},
 		{"openbsd", "386", true},
