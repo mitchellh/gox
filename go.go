@@ -37,6 +37,13 @@ func GoCrossCompile(opts *CompileOpts) error {
 	env := append(os.Environ(),
 		"GOOS="+opts.Platform.OS,
 		"GOARCH="+opts.Platform.Arch)
+
+	// If we're building for our own platform, then enable cgo always
+	if !opts.Cgo {
+		opts.Cgo = runtime.GOOS == opts.Platform.OS
+	}
+
+	// If cgo is enabled then set that env var
 	if opts.Cgo {
 		env = append(env, "CGO_ENABLED=1")
 	} else {
