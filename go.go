@@ -29,6 +29,7 @@ type CompileOpts struct {
 	Tags        string
 	Cgo         bool
 	Rebuild     bool
+	GoCmd       string
 }
 
 // GoCrossCompile
@@ -103,19 +104,19 @@ func GoCrossCompile(opts *CompileOpts) error {
 		"-o", outputPathReal,
 		opts.PackagePath)
 
-	_, err = execGo(env, chdir, args...)
+	_, err = execGo(opts.GoCmd, env, chdir, args...)
 	return err
 }
 
 // GoMainDirs returns the file paths to the packages that are "main"
 // packages, from the list of packages given. The list of packages can
 // include relative paths, the special "..." Go keyword, etc.
-func GoMainDirs(packages []string) ([]string, error) {
+func GoMainDirs(packages []string, GoCmd string) ([]string, error) {
 	args := make([]string, 0, len(packages)+3)
 	args = append(args, "list", "-f", "{{.Name}}|{{.ImportPath}}")
 	args = append(args, packages...)
 
-	output, err := execGo(nil, "", args...)
+	output, err := execGo(GoCmd, nil, "", args...)
 	if err != nil {
 		return nil, err
 	}
@@ -142,7 +143,7 @@ func GoMainDirs(packages []string) ([]string, error) {
 
 // GoRoot returns the GOROOT value for the compiled `go` binary.
 func GoRoot() (string, error) {
-	output, err := execGo(nil, "", "env", "GOROOT")
+	output, err := execGo("go", nil, "", "env", "GOROOT")
 	if err != nil {
 		return "", err
 	}
@@ -171,7 +172,7 @@ func GoVersion() (string, error) {
 	}
 
 	// Execute and read the version, which will be the only thing on stdout.
-	return execGo(nil, "", "run", sourcePath)
+	return execGo("go", nil, "", "run", sourcePath)
 }
 
 // GoVersionParts parses the version numbers from the version itself
@@ -186,9 +187,9 @@ func GoVersionParts() (result [2]int, err error) {
 	return
 }
 
-func execGo(env []string, dir string, args ...string) (string, error) {
+func execGo(GoCmd string, env []string, dir string, args ...string) (string, error) {
 	var stderr, stdout bytes.Buffer
-	cmd := exec.Command("go", args...)
+	cmd := exec.Command(GoCmd, args...)
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	if env != nil {
