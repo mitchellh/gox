@@ -40,7 +40,8 @@ func GoCrossCompile(opts *CompileOpts) error {
 
 	// If we're building for our own platform, then enable cgo always
 	if !opts.Cgo {
-		opts.Cgo = runtime.GOOS == opts.Platform.OS
+		opts.Cgo = runtime.GOOS == opts.Platform.OS &&
+			runtime.GOARCH == opts.Platform.Arch
 	}
 
 	// If cgo is enabled then set that env var
