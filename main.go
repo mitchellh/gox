@@ -217,4 +217,13 @@ Platforms (OS/Arch):
   built even if the specific os and arch is negated in "-os" and "-arch",
   respectively.
 
+Platform Overrides:
+
+  The "-gcflags" and "-ldflags" options can be overridden per-platform
+  by using environment variables. Gox will look for environment variables
+  in the following format and use those to override values if they exist:
+
+    GOX_[OS]_[ARCH]_GCFLAGS
+    GOX_[OS]_[ARCH]_LDFLAGS
+
 `
