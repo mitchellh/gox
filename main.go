@@ -134,6 +134,12 @@ func realMain() int {
 					Rebuild:     flagRebuild,
 					GoCmd:       flagGoCmd,
 				}
+
+				// Determine if we have specific CFLAGS or LDFLAGS for this
+				// GOOS/GOARCH combo and override the defaults if so.
+				envOverride(&opts.Ldflags, platform, "LDFLAGS")
+				envOverride(&opts.Gcflags, platform, "GCFLAGS")
+
 				if err := GoCrossCompile(opts); err != nil {
 					errorLock.Lock()
 					defer errorLock.Unlock()
