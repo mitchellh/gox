@@ -16,77 +16,98 @@ type Platform struct {
 	// is not a default because it is quite rare that you're cross-compiling
 	// something to Android AND something like Linux.
 	Default bool
+	ARM     string
+
+	oldARMCompatibility bool
 }
 
 func (p *Platform) String() string {
-	return fmt.Sprintf("%s/%s", p.OS, p.Arch)
+	return fmt.Sprintf("%s/%s%s", p.OS, p.Arch, p.GetARMVersion())
+}
+
+func (p *Platform) GetARMVersion() string {
+	if len(p.ARM) > 0 {
+		return "v" + p.ARM
+	}
+	return ""
 }
 
 var (
 	OsList = []string{
 		"darwin",
 		"dragonfly",
-		"freebsd",
 		"linux",
+		"android",
+		"solaris",
+		"freebsd",
+		"nacl",
 		"netbsd",
 		"openbsd",
 		"plan9",
-		"solaris",
 		"windows",
 	}
 
 	ArchList = []string{
 		"386",
 		"amd64",
+		"amd64p32",
 		"arm",
 		"arm64",
+		"mips64",
+		"mips64le",
 		"ppc64",
 		"ppc64le",
 	}
 
 	Platforms_1_0 = []Platform{
-		{"darwin", "386", true},
-		{"darwin", "amd64", true},
-		{"linux", "386", true},
-		{"linux", "amd64", true},
-		{"linux", "arm", true},
-		{"freebsd", "386", true},
-		{"freebsd", "amd64", true},
-		{"openbsd", "386", true},
-		{"openbsd", "amd64", true},
-		{"windows", "386", true},
-		{"windows", "amd64", true},
+		{OS: "darwin", Arch: "386", Default: true},
+		{OS: "darwin", Arch: "amd64", Default: true},
+		{OS: "linux", Arch: "386", Default: true},
+		{OS: "linux", Arch: "amd64", Default: true},
+		{OS: "linux", Arch: "arm", Default: true},
+		{OS: "freebsd", Arch: "386", Default: true},
+		{OS: "freebsd", Arch: "amd64", Default: true},
+		{OS: "openbsd", Arch: "386", Default: true},
+		{OS: "openbsd", Arch: "amd64", Default: true},
+		{OS: "windows", Arch: "386", Default: true},
+		{OS: "windows", Arch: "amd64", Default: true},
 	}
 
 	Platforms_1_1 = append(Platforms_1_0, []Platform{
-		{"freebsd", "arm", true},
-		{"netbsd", "386", true},
-		{"netbsd", "amd64", true},
-		{"netbsd", "arm", true},
-		{"plan9", "386", false},
+		{OS: "freebsd", Arch: "arm", Default: true},
+		{OS: "linux", Arch: "arm", Default: false, ARM: "5"},
+		{OS: "linux", Arch: "arm", Default: false, ARM: "6"},
+		{OS: "linux", Arch: "arm", Default: false, ARM: "7"},
+		{OS: "netbsd", Arch: "386", Default: true},
+		{OS: "netbsd", Arch: "amd64", Default: true},
+		{OS: "netbsd", Arch: "arm", Default: true},
+		{OS: "plan9", Arch: "386", Default: false},
 	}...)
 
 	Platforms_1_3 = append(Platforms_1_1, []Platform{
-		{"dragonfly", "386", false},
-		{"dragonfly", "amd64", false},
-		{"nacl", "amd64", false},
-		{"nacl", "amd64p32", false},
-		{"nacl", "arm", false},
-		{"solaris", "amd64", false},
+		{OS: "dragonfly", Arch: "386", Default: false},
+		{OS: "dragonfly", Arch: "amd64", Default: false},
+		{OS: "nacl", Arch: "amd64", Default: false},
+		{OS: "nacl", Arch: "amd64p32", Default: false},
+		{OS: "nacl", Arch: "arm", Default: false},
+		{OS: "solaris", Arch: "amd64", Default: false},
 	}...)
 
 	Platforms_1_4 = append(Platforms_1_3, []Platform{
-		{"android", "arm", false},
-		{"plan9", "amd64", false},
+		{OS: "android", Arch: "arm", Default: false},
+		{OS: "plan9", Arch: "amd64", Default: false},
 	}...)
 
 	Platforms_1_5 = append(Platforms_1_4, []Platform{
-		{"darwin", "arm", false},
-		{"darwin", "arm64", false},
-		{"linux", "arm64", false},
-		{"linux", "ppc64", false},
-		{"linux", "ppc64le", false},
+		{OS: "darwin", Arch: "arm", Default: false},
+		{OS: "darwin", Arch: "arm64", Default: false},
+		{OS: "linux", Arch: "arm64", Default: false},
+		{OS: "linux", Arch: "ppc64", Default: false},
+		{OS: "linux", Arch: "ppc64le", Default: false},
 	}...)
+
+	// Nothing changed from 1.5 to 1.6
+	Platforms_1_6 = Platforms_1_5
 )
 
 // SupportedPlatforms returns the full list of supported platforms for
@@ -102,8 +123,10 @@ func SupportedPlatforms(v string) []Platform {
 		return Platforms_1_4
 	} else if strings.HasPrefix(v, "go1.5") {
 		return Platforms_1_5
+	} else if strings.HasPrefix(v, "go1.6") {
+		return Platforms_1_6
 	}
 
 	// Assume latest
-	return Platforms_1_5
+	return Platforms_1_6
 }
