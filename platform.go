@@ -17,8 +17,6 @@ type Platform struct {
 	// something to Android AND something like Linux.
 	Default bool
 	ARM     string
-
-	oldARMCompatibility bool
 }
 
 func (p *Platform) String() string {

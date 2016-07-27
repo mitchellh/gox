@@ -167,10 +167,10 @@ func TestPlatformFlagPlatforms(t *testing.T) {
 			[]Platform{
 				{OS: "foo", Arch: "bar", Default: true},
 				{OS: "foo", Arch: "baz", Default: true},
-				{OS: "!bar", Arch: "bar", Default: false},
+				{OS: "bar", Arch: "bar", Default: false},
 			},
 			[]Platform{
-				{OS: "!bar", Arch: "bar", Default: false},
+				{OS: "bar", Arch: "bar", Default: false},
 			},
 		},
 
@@ -182,15 +182,15 @@ func TestPlatformFlagPlatforms(t *testing.T) {
 			[]Platform{
 				{OS: "foo", Arch: "bar", Default: true},
 				{OS: "foo", Arch: "baz", Default: true},
-				{OS: "!bar", Arch: "bar", Default: false},
+				{OS: "bar", Arch: "bar", Default: false},
 			},
 			[]Platform{
-				{OS: "!bar", Arch: "bar", Default: false},
+				{OS: "bar", Arch: "bar", Default: false},
 			},
 		},
 	}
 
-	for _, tc := range cases {
+	for i, tc := range cases {
 		f := PlatformFlag{
 			OS:     tc.OS,
 			Arch:   tc.Arch,
@@ -199,7 +199,7 @@ func TestPlatformFlagPlatforms(t *testing.T) {
 
 		result := f.Platforms(tc.Supported)
 		if !reflect.DeepEqual(result, tc.Result) {
-			t.Errorf("input: %#v\nresult: %#v", f, result)
+			t.Errorf("Index: %d. input: %#v\nresult: %#v", i, f, result)
 		}
 	}
 }
