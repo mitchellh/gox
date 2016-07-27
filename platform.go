@@ -20,7 +20,7 @@ type Platform struct {
 }
 
 func PlatformFromString(os, arch string) Platform {
-	if strings.HasPrefix(arch, "arm") && len(arch) >= 5 {
+	if strings.HasPrefix(arch, "armv") && len(arch) >= 5 {
 		return Platform{
 			OS:   os,
 			Arch: "arm",
