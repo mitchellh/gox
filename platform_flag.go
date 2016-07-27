@@ -9,9 +9,10 @@ import (
 // PlatformFlag is a flag.Value (and flag.Getter) implementation that
 // is used to track the os/arch flags on the command-line.
 type PlatformFlag struct {
-	OS     []string
-	Arch   []string
-	OSArch []Platform
+	OS      []string
+	Arch    []string
+	OSArch  []Platform
+	ARMArch []string
 }
 
 // Platforms returns the list of platforms that were set by this flag.
@@ -80,11 +81,7 @@ func (p *PlatformFlag) Platforms(supported []Platform) []Platform {
 				if _, ok := includeArch[arch]; !ok {
 					continue
 				}
-
-				prefilter = append(prefilter, Platform{
-					OS:   os,
-					Arch: arch,
-				})
+				prefilter = append(prefilter, PlatformFromString(os, arch))
 			}
 		}
 	} else if len(includeOS) > 0 {
@@ -106,18 +103,13 @@ func (p *PlatformFlag) Platforms(supported []Platform) []Platform {
 		// Remove any that aren't supported
 		result := make([]Platform, 0, len(prefilter))
 		for _, pending := range prefilter {
-			found := false
 			for _, platform := range supported {
 				if pending.String() == platform.String() {
-					found = true
+					add := platform
+					add.Default = false
+					result = append(result, add)
 					break
 				}
-			}
-
-			if found {
-				add := pending
-				add.Default = false
-				result = append(result, add)
 			}
 		}
 
@@ -155,7 +147,7 @@ func (p *PlatformFlag) Platforms(supported []Platform) []Platform {
 
 		if checkComponents {
 			if len(ignoreArch) > 0 {
-				if _, ok := ignoreArch[platform.Arch]; ok {
+				if _, ok := ignoreArch[platform.GetArch()]; ok {
 					continue
 				}
 			}
@@ -165,7 +157,7 @@ func (p *PlatformFlag) Platforms(supported []Platform) []Platform {
 				}
 			}
 			if len(includeArch) > 0 {
-				if _, ok := includeArch[platform.Arch]; !ok {
+				if _, ok := includeArch[platform.GetArch()]; !ok {
 					continue
 				}
 			}
@@ -198,6 +190,12 @@ func (p *PlatformFlag) OSFlagValue() flag.Value {
 // package to collect complete os and arch pairs for the flag.
 func (p *PlatformFlag) OSArchFlagValue() flag.Value {
 	return (*appendPlatformValue)(&p.OSArch)
+}
+
+// ARMArchFlagValue returns a flag.Value that can be used with the flag
+// package to collect the arm arches for the flag.
+func (p *PlatformFlag) ARMArchFlagValue() flag.Value {
+	return (*appendStringValue)(&p.ARMArch)
 }
 
 // appendPlatformValue is a flag.Value that appends a full platform (os/arch)

@@ -18,6 +18,7 @@ type OutputTemplateData struct {
 	Dir  string
 	OS   string
 	Arch string
+	ARM  string
 }
 
 type CompileOpts struct {
@@ -52,6 +53,10 @@ func GoCrossCompile(opts *CompileOpts) error {
 		env = append(env, "CGO_ENABLED=0")
 	}
 
+	if len(opts.Platform.ARM) > 0 {
+		env = append(env, "GOARM="+opts.Platform.ARM)
+	}
+
 	var outputPath bytes.Buffer
 	tpl, err := template.New("output").Parse(opts.OutputTpl)
 	if err != nil {
@@ -60,7 +65,8 @@ func GoCrossCompile(opts *CompileOpts) error {
 	tplData := OutputTemplateData{
 		Dir:  filepath.Base(opts.PackagePath),
 		OS:   opts.Platform.OS,
-		Arch: opts.Platform.Arch,
+		Arch: opts.Platform.GetArch(),
+		ARM:  opts.Platform.GetARMVersion(),
 	}
 	if err := tpl.Execute(&outputPath, &tplData); err != nil {
 		return err
