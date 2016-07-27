@@ -81,10 +81,7 @@ func (p *PlatformFlag) Platforms(supported []Platform) []Platform {
 				if _, ok := includeArch[arch]; !ok {
 					continue
 				}
-				prefilter = append(prefilter, Platform{
-					OS:   os,
-					Arch: arch,
-				})
+				prefilter = append(prefilter, PlatformFromString(os, arch))
 			}
 		}
 	} else if len(includeOS) > 0 {
@@ -150,7 +147,7 @@ func (p *PlatformFlag) Platforms(supported []Platform) []Platform {
 
 		if checkComponents {
 			if len(ignoreArch) > 0 {
-				if _, ok := ignoreArch[platform.Arch]; ok {
+				if _, ok := ignoreArch[platform.GetArch()]; ok {
 					continue
 				}
 			}
@@ -160,7 +157,7 @@ func (p *PlatformFlag) Platforms(supported []Platform) []Platform {
 				}
 			}
 			if len(includeArch) > 0 {
-				if _, ok := includeArch[platform.Arch]; !ok {
+				if _, ok := includeArch[platform.GetArch()]; !ok {
 					continue
 				}
 			}

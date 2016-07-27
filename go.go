@@ -65,7 +65,7 @@ func GoCrossCompile(opts *CompileOpts) error {
 	tplData := OutputTemplateData{
 		Dir:  filepath.Base(opts.PackagePath),
 		OS:   opts.Platform.OS,
-		Arch: opts.Platform.Arch,
+		Arch: opts.Platform.GetArch(),
 		ARM:  opts.Platform.GetARMVersion(),
 	}
 	if err := tpl.Execute(&outputPath, &tplData); err != nil {

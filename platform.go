@@ -19,8 +19,26 @@ type Platform struct {
 	ARM     string
 }
 
+func PlatformFromString(os, arch string) Platform {
+	if strings.HasPrefix(arch, "arm") && len(arch) >= 5 {
+		return Platform{
+			OS:   os,
+			Arch: "arm",
+			ARM:  arch[4:],
+		}
+	}
+	return Platform{
+		OS:   os,
+		Arch: arch,
+	}
+}
+
 func (p *Platform) String() string {
-	return fmt.Sprintf("%s/%s%s", p.OS, p.Arch, p.GetARMVersion())
+	return fmt.Sprintf("%s/%s", p.OS, p.GetArch())
+}
+
+func (p *Platform) GetArch() string {
+	return fmt.Sprintf("%s%s", p.Arch, p.GetARMVersion())
 }
 
 func (p *Platform) GetARMVersion() string {

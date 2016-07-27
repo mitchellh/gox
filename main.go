@@ -34,7 +34,7 @@ func realMain() int {
 	flags.Var(platformFlag.ARMArchFlagValue(), "armarch", "os to build for or skip")
 	flags.StringVar(&ldflags, "ldflags", "", "linker flags")
 	flags.StringVar(&tags, "tags", "", "go build tags")
-	flags.StringVar(&outputTpl, "output", "{{.Dir}}_{{.OS}}_{{.Arch}}{{.ARM}}", "output path")
+	flags.StringVar(&outputTpl, "output", "{{.Dir}}_{{.OS}}_{{.Arch}}", "output path")
 	flags.IntVar(&parallel, "parallel", -1, "parallelization factor")
 	flags.BoolVar(&buildToolchain, "build-toolchain", false, "build toolchain")
 	flags.BoolVar(&verbose, "verbose", false, "verbose")
