@@ -87,6 +87,23 @@ var (
 		{"linux", "ppc64", false},
 		{"linux", "ppc64le", false},
 	}...)
+
+	Platforms_1_6 = append(Platforms_1_5, []Platform{
+		{"android", "386", false},
+		{"linux", "mips64", false},
+		{"linux", "mips64le", false},
+	}...)
+
+	Platforms_1_7 = append(Platforms_1_6, []Platform{
+		{"linux", "s390x", false},
+		{"plan9", "arm", false},
+	}...)
+
+	Platforms_1_8 = append(Platforms_1_7, []Platform{
+		{"linux", "mips", false},
+		{"linux", "mipsle", false},
+		{"plan9", "arm", false},
+	}...)
 )
 
 // SupportedPlatforms returns the full list of supported platforms for
