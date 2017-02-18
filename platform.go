@@ -90,7 +90,7 @@ var (
 
 	Platforms_1_6 = append(Platforms_1_5, []Platform{
 		{"android", "386", false},
-		{"linux", "mips64", false},
+		{"linux", "mips64", true},
 		{"linux", "mips64le", false},
 	}...)
 
@@ -100,7 +100,7 @@ var (
 	}...)
 
 	Platforms_1_8 = append(Platforms_1_7, []Platform{
-		{"linux", "mips", false},
+		{"linux", "mips", true},
 		{"linux", "mipsle", false},
 		{"plan9", "arm", false},
 	}...)
@@ -119,8 +119,14 @@ func SupportedPlatforms(v string) []Platform {
 		return Platforms_1_4
 	} else if strings.HasPrefix(v, "go1.5") {
 		return Platforms_1_5
+	} else if strings.HasPrefix(v, "go1.6") {
+		return Platforms_1_6
+	} else if strings.HasPrefix(v, "go1.7") {
+		return Platforms_1_7
+	} else if strings.HasPrefix(v, "go1.8") {
+		return Platforms_1_8
 	}
 
 	// Assume latest
-	return Platforms_1_5
+	return Platforms_1_8
 }
