@@ -42,6 +42,10 @@ var (
 		"arm64",
 		"ppc64",
 		"ppc64le",
+		"mips64",
+		"mips64le",
+		"mips",
+		"mipsle",
 	}
 
 	Platforms_1_0 = []Platform{
@@ -90,19 +94,20 @@ var (
 
 	Platforms_1_6 = append(Platforms_1_5, []Platform{
 		{"android", "386", false},
-		{"linux", "mips64", true},
+		{"linux", "mips64", false},
 		{"linux", "mips64le", false},
 	}...)
 
 	Platforms_1_7 = append(Platforms_1_6, []Platform{
 		{"linux", "s390x", false},
 		{"plan9", "arm", false},
+		{"linux", "mips64", true},
+		{"linux", "mips64le", true},
 	}...)
 
 	Platforms_1_8 = append(Platforms_1_7, []Platform{
 		{"linux", "mips", true},
-		{"linux", "mipsle", false},
-		{"plan9", "arm", false},
+		{"linux", "mipsle", true},
 	}...)
 )
 
