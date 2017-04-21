@@ -72,7 +72,7 @@ var (
 		{"nacl", "amd64", false},
 		{"nacl", "amd64p32", false},
 		{"nacl", "arm", false},
-		{"solaris", "amd64", false},
+		{"solaris", "amd64", true},
 	}...)
 
 	Platforms_1_4 = append(Platforms_1_3, []Platform{
