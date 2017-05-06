@@ -14,6 +14,7 @@ func TestGoVersion(t *testing.T) {
 	acceptable := []string{
 		"devel", "go1.0", "go1.1", "go1.2", "go1.3", "go1.4.2", "go1.5",
 		"go1.5.1",
+		"go1.7",
 	}
 	found := false
 	for _, expected := range acceptable {

@@ -42,6 +42,7 @@ var (
 		"arm64",
 		"ppc64",
 		"ppc64le",
+		"s390x",
 	}
 
 	Platforms_1_0 = []Platform{
@@ -87,6 +88,10 @@ var (
 		{"linux", "ppc64", false},
 		{"linux", "ppc64le", false},
 	}...)
+
+	Platforms_1_7 = append(Platforms_1_5, []Platform{
+		{"linux", "s390x", false},
+	}...)
 )
 
 // SupportedPlatforms returns the full list of supported platforms for
@@ -102,8 +107,10 @@ func SupportedPlatforms(v string) []Platform {
 		return Platforms_1_4
 	} else if strings.HasPrefix(v, "go1.5") {
 		return Platforms_1_5
+	} else if strings.HasPrefix(v, "go1.7") {
+		return Platforms_1_7
 	}
 
 	// Assume latest
-	return Platforms_1_5
+	return Platforms_1_7
 }
