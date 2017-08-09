@@ -1,0 +1,22 @@
+name: gox
+version: master
+summary:
+  A dead simple, no frills Go cross compile tool
+description: |
+  Gox is a simple, no-frills tool for Go cross compilation that behaves a lot
+  like standard go build. Gox will parallelize builds for multiple platforms.
+  Gox will also build the cross-compilation toolchain for you.
+
+grade: devel # must be 'stable' to release into candidate/stable channels
+confinement: classic
+
+apps:
+  gox:
+    command: bin/gox
+    plugs: [home]
+
+parts:
+  gox:
+    source: .
+    plugin: go
+    go-importpath: github.com/mitchellh/gox
