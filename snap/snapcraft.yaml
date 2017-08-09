@@ -13,7 +13,6 @@ confinement: classic
 apps:
   gox:
     command: bin/gox
-    plugs: [home]
 
 parts:
   gox:
