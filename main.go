@@ -129,6 +129,7 @@ func realMain() int {
 					Platform:    platform,
 					OutputTpl:   outputTpl,
 					Ldflags:     ldflags,
+					Gcflags:     flagGcflags,
 					Tags:        tags,
 					Cgo:         flagCgo,
 					Rebuild:     flagRebuild,
