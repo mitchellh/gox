@@ -9,3 +9,5 @@ go:
 
 script:
   - go test ./...
+
+go_import_path: github.com/mitchellh/gox
