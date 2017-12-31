@@ -15,9 +15,11 @@ import (
 )
 
 type OutputTemplateData struct {
-	Dir  string
-	OS   string
-	Arch string
+	Dir       string
+	OS        string
+	OSUname   string
+	Arch      string
+	ArchUname string
 }
 
 type CompileOpts struct {
@@ -59,9 +61,11 @@ func GoCrossCompile(opts *CompileOpts) error {
 		return err
 	}
 	tplData := OutputTemplateData{
-		Dir:  filepath.Base(opts.PackagePath),
-		OS:   opts.Platform.OS,
-		Arch: opts.Platform.Arch,
+		Dir:       filepath.Base(opts.PackagePath),
+		OS:        opts.Platform.OS,
+		OSUname:   opts.Platform.OSUname(),
+		Arch:      opts.Platform.Arch,
+		ArchUname: opts.Platform.ArchUname(),
 	}
 	if err := tpl.Execute(&outputPath, &tplData); err != nil {
 		return err

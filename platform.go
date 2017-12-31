@@ -25,6 +25,33 @@ func (p *Platform) String() string {
 	return fmt.Sprintf("%s/%s", p.OS, p.Arch)
 }
 
+/// Like `uname -s`
+func (p *Platform) OSUname() string {
+	return map[string]string{
+		"darwin":    "Darwin",
+		"dragonfly": "DragonFly",
+		"freebsd":   "FreeBSD",
+		"linux":     "Linux",
+		"netbsd":    "NetBSD",
+		"openbsd":   "OpenBSD",
+		"plan9":     "Plan9",
+		"solaris":   "SunOS",
+		"windows":   "Windows",
+	}[p.OS]
+}
+
+/// Like `uname -m`
+func (p *Platform) ArchUname() string {
+	return map[string]string{
+		"386":     "i386",
+		"amd64":   "x86_64",
+		"arm":     "arm",
+		"arm64":   "aarch64",
+		"ppc64":   "ppc64",
+		"ppc64le": "ppc64le",
+	}[p.Arch]
+}
+
 var (
 	Platforms_1_0 = []Platform{
 		{"darwin", "386", true},
