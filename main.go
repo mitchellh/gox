@@ -23,7 +23,7 @@ func realMain() int {
 	var platformFlag PlatformFlag
 	var tags string
 	var verbose bool
-	var flagGcflags string
+	var flagGcflags, flagAsmflags string
 	var flagCgo, flagRebuild, flagListOSArch bool
 	var flagGoCmd string
 	flags := flag.NewFlagSet("gox", flag.ExitOnError)
@@ -41,6 +41,7 @@ func realMain() int {
 	flags.BoolVar(&flagRebuild, "rebuild", false, "")
 	flags.BoolVar(&flagListOSArch, "osarch-list", false, "")
 	flags.StringVar(&flagGcflags, "gcflags", "", "")
+	flags.StringVar(&flagAsmflags, "asmflags", "", "")
 	flags.StringVar(&flagGoCmd, "gocmd", "go", "")
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		flags.Usage()
@@ -130,6 +131,7 @@ func realMain() int {
 					OutputTpl:   outputTpl,
 					Ldflags:     ldflags,
 					Gcflags:     flagGcflags,
+					Asmflags:    flagAsmflags,
 					Tags:        tags,
 					Cgo:         flagCgo,
 					Rebuild:     flagRebuild,
@@ -140,6 +142,7 @@ func realMain() int {
 				// GOOS/GOARCH combo and override the defaults if so.
 				envOverride(&opts.Ldflags, platform, "LDFLAGS")
 				envOverride(&opts.Gcflags, platform, "GCFLAGS")
+				envOverride(&opts.Asmflags, platform, "ASMFLAGS")
 
 				if err := GoCrossCompile(opts); err != nil {
 					errorLock.Lock()
@@ -182,6 +185,7 @@ Options:
   -cgo                Sets CGO_ENABLED=1, requires proper C toolchain (advanced)
   -gcflags=""         Additional '-gcflags' value to pass to go build
   -ldflags=""         Additional '-ldflags' value to pass to go build
+  -asmflags=""        Additional '-asmflags' value to pass to go build
   -tags=""            Additional '-tags' value to pass to go build
   -os=""              Space-separated list of operating systems to build for
   -osarch=""          Space-separated list of os/arch pairs to build for
@@ -220,11 +224,12 @@ Platforms (OS/Arch):
 
 Platform Overrides:
 
-  The "-gcflags" and "-ldflags" options can be overridden per-platform
+  The "-gcflags", "-ldflags" and "-asmflags" options can be overridden per-platform
   by using environment variables. Gox will look for environment variables
   in the following format and use those to override values if they exist:
 
     GOX_[OS]_[ARCH]_GCFLAGS
     GOX_[OS]_[ARCH]_LDFLAGS
+    GOX_[OS]_[ARCH]_ASMFLAGS
 
 `
