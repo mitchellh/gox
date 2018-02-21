@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"strings"
+
+	version "github.com/hashicorp/go-version"
 )
 
 // Platform is a combination of OS/arch that can be built against.
@@ -92,16 +95,40 @@ var (
 // SupportedPlatforms returns the full list of supported platforms for
 // the version of Go that is
 func SupportedPlatforms(v string) []Platform {
-	if strings.HasPrefix(v, "go1.0") {
-		return Platforms_1_0
-	} else if strings.HasPrefix(v, "go1.1") {
-		return Platforms_1_1
-	} else if strings.HasPrefix(v, "go1.3") {
-		return Platforms_1_3
-	} else if strings.HasPrefix(v, "go1.4") {
-		return Platforms_1_4
-	} else if strings.HasPrefix(v, "go1.5") {
+	// Use latest if we get an unexpected version string
+	if !strings.HasPrefix(v, "go") {
 		return Platforms_1_5
+	}
+	// go-version only cares about version numbers
+	v = v[2:]
+
+	current, err := version.NewVersion(v)
+	if err != nil {
+		log.Printf("Unable to parse current go version: %s\n%s", v, err.Error())
+
+		// Default to 1.5
+		return Platforms_1_5
+	}
+
+	var platforms = []struct {
+		constraint string
+		plat       []Platform
+	}{
+		{"<= 1.0", Platforms_1_0},
+		{">= 1.1, < 1.3", Platforms_1_1},
+		{">= 1.3, < 1.4", Platforms_1_3},
+		{">= 1.4, < 1.5", Platforms_1_4},
+		{">= 1.5", Platforms_1_5},
+	}
+
+	for _, p := range platforms {
+		constraints, err := version.NewConstraint(p.constraint)
+		if err != nil {
+			panic(err)
+		}
+		if constraints.Check(current) {
+			return p.plat
+		}
 	}
 
 	// Assume latest

@@ -1,0 +1,19 @@
+{
+	"comment": "",
+	"ignore": "",
+	"package": [
+		{
+			"checksumSHA1": "3xP5/nFAqTJCKmOIPKv4GadUQb4=",
+			"path": "github.com/hashicorp/go-version",
+			"revision": "4fe82ae3040f80a03d04d2cccb5606a626b8e1ee",
+			"revisionTime": "2017-11-29T15:08:20Z"
+		},
+		{
+			"checksumSHA1": "tIQCd3YGbEvxr9j2pFS8LCHt9nY=",
+			"path": "github.com/mitchellh/gox",
+			"revision": "0d65d8b8c2d1ebc3355877aec37060bee0a2f9fe",
+			"revisionTime": "2018-01-03T15:26:19Z"
+		}
+	],
+	"rootPath": "github.com/mitchellh/gox"
+}
