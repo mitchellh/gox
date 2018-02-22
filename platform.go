@@ -45,6 +45,10 @@ var (
 		"arm64",
 		"ppc64",
 		"ppc64le",
+		"mips64",
+		"mips64le",
+		"mips",
+		"mipsle",
 	}
 
 	Platforms_1_0 = []Platform{
@@ -90,6 +94,24 @@ var (
 		{"linux", "ppc64", false},
 		{"linux", "ppc64le", false},
 	}...)
+
+	Platforms_1_6 = append(Platforms_1_5, []Platform{
+		{"android", "386", false},
+		{"linux", "mips64", false},
+		{"linux", "mips64le", false},
+	}...)
+
+	Platforms_1_7 = append(Platforms_1_6, []Platform{
+		{"linux", "s390x", false},
+		{"plan9", "arm", false},
+		{"linux", "mips64", true},
+		{"linux", "mips64le", true},
+	}...)
+
+	Platforms_1_8 = append(Platforms_1_7, []Platform{
+		{"linux", "mips", true},
+		{"linux", "mipsle", true},
+	}...)
 )
 
 // SupportedPlatforms returns the full list of supported platforms for
@@ -108,6 +130,12 @@ func SupportedPlatforms(v string) []Platform {
 
 		// Default to 1.5
 		return Platforms_1_5
+	} else if strings.HasPrefix(v, "go1.6") {
+		return Platforms_1_6
+	} else if strings.HasPrefix(v, "go1.7") {
+		return Platforms_1_7
+	} else if strings.HasPrefix(v, "go1.8") {
+		return Platforms_1_8
 	}
 
 	var platforms = []struct {
@@ -132,5 +160,5 @@ func SupportedPlatforms(v string) []Platform {
 	}
 
 	// Assume latest
-	return Platforms_1_5
+	return Platforms_1_8
 }
