@@ -93,6 +93,11 @@ var (
 
 	// no new platforms in 1.9
 	Platforms_1_9 = Platforms_1_8
+
+	// no new platforms in 1.10
+	Platforms_1_10 = Platforms_1_9
+
+	PlatformsLatest = Platforms_1_10
 )
 
 // SupportedPlatforms returns the full list of supported platforms for
@@ -100,7 +105,7 @@ var (
 func SupportedPlatforms(v string) []Platform {
 	// Use latest if we get an unexpected version string
 	if !strings.HasPrefix(v, "go") {
-		return Platforms_1_9
+		return PlatformsLatest
 	}
 	// go-version only cares about version numbers
 	v = v[2:]
@@ -109,8 +114,8 @@ func SupportedPlatforms(v string) []Platform {
 	if err != nil {
 		log.Printf("Unable to parse current go version: %s\n%s", v, err.Error())
 
-		// Default to 1.9
-		return Platforms_1_9
+		// Default to latest
+		return PlatformsLatest
 	}
 
 	var platforms = []struct {
@@ -126,6 +131,7 @@ func SupportedPlatforms(v string) []Platform {
 		{">= 1.7, < 1.8", Platforms_1_7},
 		{">= 1.8, < 1.9", Platforms_1_8},
 		{">= 1.9, < 1.10", Platforms_1_9},
+		{">=1.10, < 1.11", Platforms_1_10},
 	}
 
 	for _, p := range platforms {
