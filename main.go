@@ -24,7 +24,7 @@ func realMain() int {
 	var tags string
 	var verbose bool
 	var flagGcflags, flagAsmflags string
-	var flagCgo, flagRebuild, flagListOSArch bool
+	var flagCgo, flagRebuild, flagBuildLib, flagListOSArch bool
 	var flagGoCmd string
 	flags := flag.NewFlagSet("gox", flag.ExitOnError)
 	flags.Usage = func() { printUsage() }
@@ -39,6 +39,7 @@ func realMain() int {
 	flags.BoolVar(&verbose, "verbose", false, "verbose")
 	flags.BoolVar(&flagCgo, "cgo", false, "")
 	flags.BoolVar(&flagRebuild, "rebuild", false, "")
+	flags.BoolVar(&flagBuildLib, "build-lib", false, "")
 	flags.BoolVar(&flagListOSArch, "osarch-list", false, "")
 	flags.StringVar(&flagGcflags, "gcflags", "", "")
 	flags.StringVar(&flagAsmflags, "asmflags", "", "")
@@ -95,7 +96,7 @@ func realMain() int {
 	}
 
 	// Get the packages that are in the given paths
-	mainDirs, err := GoMainDirs(packages, flagGoCmd)
+	mainDirs, err := GoMainDirs(packages, flagGoCmd, !flagBuildLib)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error reading packages: %s", err)
 		return 1
@@ -194,6 +195,7 @@ Options:
   -parallel=-1        Amount of parallelism, defaults to number of CPUs
   -gocmd="go"         Build command, defaults to Go
   -rebuild            Force rebuilding of package that were up to date
+  -build-lib          Force the build of a library package. By default gox only build for main packages.
   -verbose            Verbose mode
 
 Output path template:
