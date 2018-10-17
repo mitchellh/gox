@@ -26,6 +26,7 @@ func realMain() int {
 	var flagGcflags, flagAsmflags string
 	var flagCgo, flagRebuild, flagListOSArch bool
 	var flagGoCmd string
+	var cCrossCompilerFlag CCrossCompilerFlag
 	flags := flag.NewFlagSet("gox", flag.ExitOnError)
 	flags.Usage = func() { printUsage() }
 	flags.Var(platformFlag.ArchFlagValue(), "arch", "arch to build for or skip")
@@ -43,6 +44,7 @@ func realMain() int {
 	flags.StringVar(&flagGcflags, "gcflags", "", "")
 	flags.StringVar(&flagAsmflags, "asmflags", "", "")
 	flags.StringVar(&flagGoCmd, "gocmd", "go", "")
+	flags.Var(&cCrossCompilerFlag, "c-cross-compilers", "C cross-compilers to use for platforms")
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		flags.Usage()
 		return 1
@@ -110,6 +112,18 @@ func realMain() int {
 		return 1
 	}
 
+	var cCompilers map[string]string
+	if flagCgo {
+		cCompilers = cCrossCompilerFlag.Get()
+		for _, compiler := range cCompilers {
+			if _, err := exec.LookPath(compiler); err != nil {
+				fmt.Fprintf(os.Stderr, "C compiler %s must be on the PATH\n",
+					compiler)
+				return 1
+			}
+		}
+	}
+
 	// Build in parallel!
 	fmt.Printf("Number of parallel builds: %d\n\n", parallel)
 	var errorLock sync.Mutex
@@ -136,6 +150,13 @@ func realMain() int {
 					Cgo:         flagCgo,
 					Rebuild:     flagRebuild,
 					GoCmd:       flagGoCmd,
+				}
+
+				// select C cross-compiler if set
+				if opts.Cgo {
+					if compiler, ok := cCompilers[platform.String()]; ok {
+						opts.CCrossCompiler = compiler
+					}
 				}
 
 				// Determine if we have specific CFLAGS or LDFLAGS for this
@@ -182,6 +203,7 @@ Options:
 
   -arch=""            Space-separated list of architectures to build for
   -build-toolchain    Build cross-compilation toolchain
+  -c-cross-compilers  Set custom C cross-compilers for platforms if CGO is enabled
   -cgo                Sets CGO_ENABLED=1, requires proper C toolchain (advanced)
   -gcflags=""         Additional '-gcflags' value to pass to go build
   -ldflags=""         Additional '-ldflags' value to pass to go build
@@ -231,5 +253,13 @@ Platform Overrides:
     GOX_[OS]_[ARCH]_GCFLAGS
     GOX_[OS]_[ARCH]_LDFLAGS
     GOX_[OS]_[ARCH]_ASMFLAGS
+
+C cross-compilers:
+
+  It is possible to set C cross-compilers by platforms when CGO is enabled.
+  The format of setting a compiler for a platform is the following:
+  { platform }={ compiler }. To configure multiple compilers for multiple
+  platforms separate each setting by a comma.
+  Example: -c-cross-compilers="linux/arm=arm-linux-gnueabi-gcc-6"
 
 `

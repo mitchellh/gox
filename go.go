@@ -21,16 +21,17 @@ type OutputTemplateData struct {
 }
 
 type CompileOpts struct {
-	PackagePath string
-	Platform    Platform
-	OutputTpl   string
-	Ldflags     string
-	Gcflags     string
-	Asmflags    string
-	Tags        string
-	Cgo         bool
-	Rebuild     bool
-	GoCmd       string
+	PackagePath    string
+	Platform       Platform
+	OutputTpl      string
+	Ldflags        string
+	Gcflags        string
+	Asmflags       string
+	Tags           string
+	Cgo            bool
+	Rebuild        bool
+	GoCmd          string
+	CCrossCompiler string
 }
 
 // GoCrossCompile
@@ -49,6 +50,9 @@ func GoCrossCompile(opts *CompileOpts) error {
 	// If cgo is enabled then set that env var
 	if opts.Cgo {
 		env = append(env, "CGO_ENABLED=1")
+		if opts.CCrossCompiler != "" {
+			env = append(env, "CC="+opts.CCrossCompiler)
+		}
 	} else {
 		env = append(env, "CGO_ENABLED=0")
 	}
