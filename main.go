@@ -24,7 +24,7 @@ func realMain() int {
 	var tags string
 	var verbose bool
 	var flagGcflags, flagAsmflags string
-	var flagCgo, flagRebuild, flagListOSArch bool
+	var flagCgo, flagRebuild, flagRaceflag, flagListOSArch bool
 	var flagGoCmd string
 	flags := flag.NewFlagSet("gox", flag.ExitOnError)
 	flags.Usage = func() { printUsage() }
@@ -39,6 +39,7 @@ func realMain() int {
 	flags.BoolVar(&verbose, "verbose", false, "verbose")
 	flags.BoolVar(&flagCgo, "cgo", false, "")
 	flags.BoolVar(&flagRebuild, "rebuild", false, "")
+	flags.BoolVar(&flagRaceflag, "race", false, "")
 	flags.BoolVar(&flagListOSArch, "osarch-list", false, "")
 	flags.StringVar(&flagGcflags, "gcflags", "", "")
 	flags.StringVar(&flagAsmflags, "asmflags", "", "")
@@ -133,6 +134,7 @@ func realMain() int {
 					Gcflags:     flagGcflags,
 					Asmflags:    flagAsmflags,
 					Tags:        tags,
+					Raceflag:    flagRaceflag,
 					Cgo:         flagCgo,
 					Rebuild:     flagRebuild,
 					GoCmd:       flagGoCmd,
@@ -187,6 +189,7 @@ Options:
   -ldflags=""         Additional '-ldflags' value to pass to go build
   -asmflags=""        Additional '-asmflags' value to pass to go build
   -tags=""            Additional '-tags' value to pass to go build
+  -race               Additional '-race' value to pass to go build
   -os=""              Space-separated list of operating systems to build for
   -osarch=""          Space-separated list of os/arch pairs to build for
   -osarch-list        List supported os/arch pairs for your Go version
