@@ -143,6 +143,8 @@ func realMain() int {
 				envOverride(&opts.Ldflags, platform, "LDFLAGS")
 				envOverride(&opts.Gcflags, platform, "GCFLAGS")
 				envOverride(&opts.Asmflags, platform, "ASMFLAGS")
+				envOverride(&opts.Cc, platform, "CC")
+				envOverride(&opts.Cxx, platform, "CXX")
 
 				if err := GoCrossCompile(opts); err != nil {
 					errorLock.Lock()
