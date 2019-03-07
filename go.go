@@ -122,9 +122,12 @@ func GoCrossCompile(opts *CompileOpts) error {
 // GoMainDirs returns the file paths to the packages that are "main"
 // packages, from the list of packages given. The list of packages can
 // include relative paths, the special "..." Go keyword, etc.
-func GoMainDirs(packages []string, GoCmd string) ([]string, error) {
-	args := make([]string, 0, len(packages)+3)
+func GoMainDirs(packages []string, GoCmd, tags string) ([]string, error) {
+	args := make([]string, 0, len(packages)+5)
 	args = append(args, "list", "-f", "{{.Name}}|{{.ImportPath}}")
+	if tags != "" {
+		args = append(args, "-tags", tags)
+	}
 	args = append(args, packages...)
 
 	output, err := execGo(GoCmd, nil, "", args...)

@@ -95,7 +95,7 @@ func realMain() int {
 	}
 
 	// Get the packages that are in the given paths
-	mainDirs, err := GoMainDirs(packages, flagGoCmd)
+	mainDirs, err := GoMainDirs(packages, flagGoCmd, tags)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error reading packages: %s", err)
 		return 1
