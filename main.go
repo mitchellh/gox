@@ -35,6 +35,7 @@ func realMain() int {
 	flags.Var(platformFlag.ArchFlagValue(), "arch", "arch to build for or skip")
 	flags.Var(platformFlag.OSArchFlagValue(), "osarch", "os/arch pairs to build for or skip")
 	flags.Var(platformFlag.OSFlagValue(), "os", "os to build for or skip")
+	flags.BoolVar(&platformFlag.All, "all", false, "build for all known os/arch combination")
 	flags.StringVar(&ldflags, "ldflags", "", "linker flags")
 	flags.StringVar(&tags, "tags", "", "go build tags")
 	flags.StringVar(&outputTpl, "output", "{{.Dir}}_{{.OS}}_{{.Arch}}", "output path")
