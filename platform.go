@@ -97,8 +97,33 @@ var (
 	// no new platforms in 1.10
 	Platforms_1_10 = Platforms_1_9
 
-	PlatformsLatest = Platforms_1_10
+	// no new platforms in 1.11 (only experimental web assembly)
+	Platforms_1_11 = Platforms_1_10
+
+	Platforms_1_12 = removeOsArch(append(Platforms_1_11, []Platform{
+		{"windows", "arm", false},
+		{"aix", "ppc64", false},
+	}...), []Platform{
+		{OS: "dragonfly", Arch: "386"},
+		{OS: "nacl", Arch: "amd64"},
+	})
+
+	PlatformsLatest = Platforms_1_12
 )
+
+func removeOsArch(platforms, platformsToRemove []Platform) []Platform {
+	newPlatform := make([]Platform, 0, len(platforms))
+MainLoop:
+	for _, v := range platforms {
+		for _, other := range platformsToRemove {
+			if v.OS == other.OS && v.Arch == other.Arch {
+				continue MainLoop
+			}
+		}
+		newPlatform = append(newPlatform, v)
+	}
+	return newPlatform
+}
 
 // SupportedPlatforms returns the full list of supported platforms for
 // the version of Go that is
@@ -145,5 +170,5 @@ func SupportedPlatforms(v string) []Platform {
 	}
 
 	// Assume latest
-	return Platforms_1_9
+	return PlatformsLatest
 }
