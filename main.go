@@ -35,7 +35,7 @@ func realMain() int {
 	flags.Var(platformFlag.ArchFlagValue(), "arch", "arch to build for or skip")
 	flags.Var(platformFlag.OSArchFlagValue(), "osarch", "os/arch pairs to build for or skip")
 	flags.Var(platformFlag.OSFlagValue(), "os", "os to build for or skip")
-	flags.BoolVar(&platformFlag.All, "all", false, "build for all known os/arch combination")
+	flags.BoolVar(&platformFlag.All, "all", false, "build for all known os/arch combinations")
 	flags.StringVar(&ldflags, "ldflags", "", "linker flags")
 	flags.StringVar(&tags, "tags", "", "go build tags")
 	flags.StringVar(&outputTpl, "output", "{{.Dir}}_{{.OS}}_{{.Arch}}", "output path")
@@ -218,6 +218,7 @@ Options:
   -os=""              Space-separated list of operating systems to build for
   -osarch=""          Space-separated list of os/arch pairs to build for
   -osarch-list        List supported os/arch pairs for your Go version
+  -all                Build for all know os/arch combinations
   -output="foo"       Output path template. See below for more info
   -parallel=-1        Amount of parallelism, defaults to number of CPUs
   -gocmd="go"         Build command, defaults to Go
