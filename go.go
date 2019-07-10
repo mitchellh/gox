@@ -187,7 +187,7 @@ func GoVersion() (string, error) {
 	}
 
 	// Execute and read the version, which will be the only thing on stdout.
-	return execGo("go", nil, "", "run", sourcePath)
+	return execGo("go", nil, td, "run", sourcePath)
 }
 
 // GoVersionParts parses the version numbers from the version itself
