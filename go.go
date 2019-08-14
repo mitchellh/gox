@@ -31,6 +31,7 @@ type CompileOpts struct {
 	ModMode     string
 	Cgo         bool
 	Rebuild     bool
+	Buildmode   string
 	GoCmd       string
 }
 
@@ -110,6 +111,9 @@ func GoCrossCompile(opts *CompileOpts) error {
 	}
 	if opts.ModMode != "" {
 		args = append(args, "-mod", opts.ModMode)
+	}
+	if opts.Buildmode != "" {
+		args = append(args, "-buildmode", opts.Buildmode)
 	}
 	args = append(args,
 		"-gcflags", opts.Gcflags,
