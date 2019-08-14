@@ -26,7 +26,7 @@ func realMain() int {
 	var platformFlag PlatformFlag
 	var tags string
 	var verbose bool
-	var flagGcflags, flagAsmflags string
+	var flagGcflags, flagAsmflags, flagBuildmode string
 	var flagCgo, flagRebuild, flagListOSArch bool
 	var flagGoCmd string
 	var modMode string
@@ -44,6 +44,7 @@ func realMain() int {
 	flags.BoolVar(&flagCgo, "cgo", false, "")
 	flags.BoolVar(&flagRebuild, "rebuild", false, "")
 	flags.BoolVar(&flagListOSArch, "osarch-list", false, "")
+	flags.StringVar(&flagBuildmode, "buildmode", "", "")
 	flags.StringVar(&flagGcflags, "gcflags", "", "")
 	flags.StringVar(&flagAsmflags, "asmflags", "", "")
 	flags.StringVar(&flagGoCmd, "gocmd", "go", "")
@@ -161,6 +162,7 @@ func realMain() int {
 					ModMode:     modMode,
 					Cgo:         flagCgo,
 					Rebuild:     flagRebuild,
+					Buildmode:   flagBuildmode,
 					GoCmd:       flagGoCmd,
 				}
 
@@ -214,6 +216,7 @@ Options:
   -asmflags=""        Additional '-asmflags' value to pass to go build
   -tags=""            Additional '-tags' value to pass to go build
   -mod=""             Additional '-mod' value to pass to go build
+  -buildmode=""       Additional '-buildmode' value to pass to go build
   -os=""              Space-separated list of operating systems to build for
   -osarch=""          Space-separated list of os/arch pairs to build for
   -osarch-list        List supported os/arch pairs for your Go version
