@@ -27,7 +27,7 @@ func realMain() int {
 	var tags string
 	var verbose bool
 	var flagGcflags, flagAsmflags string
-	var flagCgo, flagRebuild, flagListOSArch bool
+	var flagCgo, flagRebuild, flagTrimPath, flagListOSArch bool
 	var flagGoCmd string
 	var modMode string
 	flags := flag.NewFlagSet("gox", flag.ExitOnError)
@@ -43,6 +43,7 @@ func realMain() int {
 	flags.BoolVar(&verbose, "verbose", false, "verbose")
 	flags.BoolVar(&flagCgo, "cgo", false, "")
 	flags.BoolVar(&flagRebuild, "rebuild", false, "")
+	flags.BoolVar(&flagTrimPath, "trimpath", false, "")
 	flags.BoolVar(&flagListOSArch, "osarch-list", false, "")
 	flags.StringVar(&flagGcflags, "gcflags", "", "")
 	flags.StringVar(&flagAsmflags, "asmflags", "", "")
@@ -161,6 +162,7 @@ func realMain() int {
 					ModMode:     modMode,
 					Cgo:         flagCgo,
 					Rebuild:     flagRebuild,
+					TrimPath:    flagTrimPath,
 					GoCmd:       flagGoCmd,
 				}
 
@@ -221,6 +223,7 @@ Options:
   -parallel=-1        Amount of parallelism, defaults to number of CPUs
   -gocmd="go"         Build command, defaults to Go
   -rebuild            Force rebuilding of package that were up to date
+  -trimpath			  Remove all file system paths from the resulting executable
   -verbose            Verbose mode
 
 Output path template:

@@ -31,6 +31,7 @@ type CompileOpts struct {
 	ModMode     string
 	Cgo         bool
 	Rebuild     bool
+	TrimPath    bool
 	GoCmd       string
 }
 
@@ -107,6 +108,9 @@ func GoCrossCompile(opts *CompileOpts) error {
 	args := []string{"build"}
 	if opts.Rebuild {
 		args = append(args, "-a")
+	}
+	if opts.TrimPath {
+		args = append(args, "-trimpath")
 	}
 	if opts.ModMode != "" {
 		args = append(args, "-mod", opts.ModMode)
