@@ -91,9 +91,18 @@ var (
 		{"linux", "mipsle", true},
 	}...)
 
-	// no new platforms in 1.9
-	Platforms_1_9 = Platforms_1_8
-
+	Platforms_1_9 = append(Platforms_1_8, []Platform{
+		{"linux", "riscv64", true},
+		{"freebsd", "riscv64", true},
+		{"freebsd", "arm64", true},
+		{"freebsd", "arm", true},
+		{"openbsd", "arm64", true},
+		{"openbsd", "arm", true},
+		{"openbsd", "riscv64", true},
+		{"windows", "arm", true},
+		{"windows", "arm64", true},
+		{"js", "wasm", true},
+	}...)
 	// no new platforms in 1.10
 	Platforms_1_10 = Platforms_1_9
 
