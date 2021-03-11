@@ -27,7 +27,7 @@ func realMain() int {
 	var tags string
 	var verbose bool
 	var flagGcflags, flagAsmflags string
-	var flagCgo, flagRebuild, flagListOSArch bool
+	var flagCgo, flagRebuild, flagListOSArch, flagRaceFlag bool
 	var flagGoCmd string
 	var modMode string
 	flags := flag.NewFlagSet("gox", flag.ExitOnError)
@@ -44,6 +44,7 @@ func realMain() int {
 	flags.BoolVar(&flagCgo, "cgo", false, "")
 	flags.BoolVar(&flagRebuild, "rebuild", false, "")
 	flags.BoolVar(&flagListOSArch, "osarch-list", false, "")
+	flags.BoolVar(&flagRaceFlag, "race", false, "")
 	flags.StringVar(&flagGcflags, "gcflags", "", "")
 	flags.StringVar(&flagAsmflags, "asmflags", "", "")
 	flags.StringVar(&flagGoCmd, "gocmd", "go", "")
@@ -162,6 +163,7 @@ func realMain() int {
 					Cgo:         flagCgo,
 					Rebuild:     flagRebuild,
 					GoCmd:       flagGoCmd,
+					Race:        flagRaceFlag,
 				}
 
 				// Determine if we have specific CFLAGS or LDFLAGS for this
@@ -219,6 +221,7 @@ Options:
   -osarch-list        List supported os/arch pairs for your Go version
   -output="foo"       Output path template. See below for more info
   -parallel=-1        Amount of parallelism, defaults to number of CPUs
+  -race               Build with the go race detector enabled, requires CGO
   -gocmd="go"         Build command, defaults to Go
   -rebuild            Force rebuilding of package that were up to date
   -verbose            Verbose mode
