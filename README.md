@@ -9,7 +9,7 @@ platforms. Gox will also build the cross-compilation toolchain for you.
 To install Gox, please use `go get`. We tag versions so feel free to
 checkout that tag and compile.
 
-```
+```bash
 $ go get github.com/mitchellh/gox
 ...
 $ gox -h
@@ -23,7 +23,7 @@ example, to build the current package, specify no parameters and just
 call `gox`. Gox will parallelize based on the number of CPUs you have
 by default and build for every platform by default:
 
-```
+```bash
 $ gox
 Number of parallel builds: 4
 
@@ -47,28 +47,28 @@ Number of parallel builds: 4
 
 Or, if you want to build a package and sub-packages:
 
-```
+```bash
 $ gox ./...
 ...
 ```
 
 Or, if you want to build multiple distinct packages:
 
-```
+```bash
 $ gox github.com/mitchellh/gox github.com/hashicorp/serf
 ...
 ```
 
 Or if you want to just build for linux:
 
-```
+```bash
 $ gox -os="linux"
 ...
 ```
 
 Or maybe you just want to build for 64-bit linux:
 
-```
+```bash
 $ gox -osarch="linux/amd64"
 ...
 ```
