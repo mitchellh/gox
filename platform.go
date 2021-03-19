@@ -25,6 +25,51 @@ func (p *Platform) String() string {
 	return fmt.Sprintf("%s/%s", p.OS, p.Arch)
 }
 
+/// Like `uname -s`
+// Matches https://github.com/golang/go/blob/master/src/go/build/syslist.go
+func (p *Platform) OSUname() string {
+	return map[string]string{
+		//"android":
+		"darwin":    "Darwin",
+		"dragonfly": "DragonFly",
+		"freebsd":   "FreeBSD",
+		"linux":     "Linux",
+		//"nacl":
+		"netbsd":    "NetBSD",
+		"openbsd":   "OpenBSD",
+		"plan9":     "Plan9",
+		"solaris":   "SunOS",
+		"windows":   "Windows",
+		//"zos":
+	}[p.OS]
+}
+
+/// Like `uname -m`
+// Matches https://github.com/golang/go/blob/master/src/go/build/syslist.go
+func (p *Platform) ArchUname() string {
+	return map[string]string{
+		"386":     "i386",
+		"amd64":   "x86_64",
+		//"amd64p32":
+		"arm":     "arm",
+		//"armbe":
+		"arm64":   "aarch64",
+		//"arm64be":
+		"ppc64":   "ppc64",
+		"ppc64le": "ppc64le",
+		//"mips":
+		//"mipsle":
+		//"mips64":
+		//"mips64p32":
+		//"mips64p32le":
+		//"ppc":
+		//"s390":
+		//"s390x":
+		//"sparc":
+		//"sparc64":
+	}[p.Arch]
+}
+
 var (
 	Platforms_1_0 = []Platform{
 		{"darwin", "386", true},

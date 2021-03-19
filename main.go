@@ -230,8 +230,9 @@ Output path template:
 
   The output path for the compiled binaries is specified with the
   "-output" flag. The value is a string that is a Go text template.
-  The default value is "{{.Dir}}_{{.OS}}_{{.Arch}}". The variables and
-  their values should be self-explanatory.
+  The default value is "{{.Dir}}_{{.OS}}_{{.Arch}}". Other available
+  variables are OSUname and ArchUname which should correspond to uname -s
+  and uname -m respectively.
 
 Platforms (OS/Arch):
 
