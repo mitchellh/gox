@@ -26,8 +26,8 @@ func realMain() int {
 	var platformFlag PlatformFlag
 	var tags string
 	var verbose bool
-	var flagGcflags, flagAsmflags string
-	var flagCgo, flagRebuild, flagListOSArch, flagRaceFlag bool
+	var flagGcflags, flagAsmflags, flagBuildmode string
+	var flagCgo, flagRebuild, flagTrimPath, flagListOSArch, flagRaceFlag bool
 	var flagGoCmd string
 	var modMode string
 	flags := flag.NewFlagSet("gox", flag.ExitOnError)
@@ -43,8 +43,10 @@ func realMain() int {
 	flags.BoolVar(&verbose, "verbose", false, "verbose")
 	flags.BoolVar(&flagCgo, "cgo", false, "")
 	flags.BoolVar(&flagRebuild, "rebuild", false, "")
+	flags.BoolVar(&flagTrimPath, "trimpath", false, "")
 	flags.BoolVar(&flagListOSArch, "osarch-list", false, "")
 	flags.BoolVar(&flagRaceFlag, "race", false, "")
+	flags.StringVar(&flagBuildmode, "buildmode", "", "")
 	flags.StringVar(&flagGcflags, "gcflags", "", "")
 	flags.StringVar(&flagAsmflags, "asmflags", "", "")
 	flags.StringVar(&flagGoCmd, "gocmd", "go", "")
@@ -162,6 +164,8 @@ func realMain() int {
 					ModMode:     modMode,
 					Cgo:         flagCgo,
 					Rebuild:     flagRebuild,
+					Buildmode:   flagBuildmode,
+					TrimPath:    flagTrimPath,
 					GoCmd:       flagGoCmd,
 					Race:        flagRaceFlag,
 				}
@@ -171,6 +175,8 @@ func realMain() int {
 				envOverride(&opts.Ldflags, platform, "LDFLAGS")
 				envOverride(&opts.Gcflags, platform, "GCFLAGS")
 				envOverride(&opts.Asmflags, platform, "ASMFLAGS")
+				envOverride(&opts.Cc, platform, "CC")
+				envOverride(&opts.Cxx, platform, "CXX")
 
 				if err := GoCrossCompile(opts); err != nil {
 					errorLock.Lock()
@@ -216,6 +222,7 @@ Options:
   -asmflags=""        Additional '-asmflags' value to pass to go build
   -tags=""            Additional '-tags' value to pass to go build
   -mod=""             Additional '-mod' value to pass to go build
+  -buildmode=""       Additional '-buildmode' value to pass to go build
   -os=""              Space-separated list of operating systems to build for
   -osarch=""          Space-separated list of os/arch pairs to build for
   -osarch-list        List supported os/arch pairs for your Go version
@@ -224,6 +231,7 @@ Options:
   -race               Build with the go race detector enabled, requires CGO
   -gocmd="go"         Build command, defaults to Go
   -rebuild            Force rebuilding of package that were up to date
+  -trimpath           Remove all file system paths from the resulting executable
   -verbose            Verbose mode
 
 Output path template:
@@ -247,19 +255,21 @@ Platforms (OS/Arch):
   expect: "darwin/amd64" would be a valid osarch value. Multiple can be space
   separated. An os/arch pair can begin with "!" to not build for that platform.
 
-  The "-osarch" flag has the highest precedent when determing whether to
+  The "-osarch" flag has the highest precedent when determining whether to
   build for a platform. If it is included in the "-osarch" list, it will be
   built even if the specific os and arch is negated in "-os" and "-arch",
   respectively.
 
 Platform Overrides:
 
-  The "-gcflags", "-ldflags" and "-asmflags" options can be overridden per-platform
-  by using environment variables. Gox will look for environment variables
-  in the following format and use those to override values if they exist:
+  The "-gcflags", "-ldflags" and "-asmflags" options and "CC"/"CXX" environment
+  variables for cross-compilation can be overridden per-platform by using
+  environment variables. Gox will look for environment variables in the
+  following format and use those to override values if they exist:
 
     GOX_[OS]_[ARCH]_GCFLAGS
     GOX_[OS]_[ARCH]_LDFLAGS
     GOX_[OS]_[ARCH]_ASMFLAGS
-
+    GOX_[OS]_[ARCH]_CC
+    GOX_[OS]_[ARCH]_CXX
 `
