@@ -89,6 +89,8 @@ var (
 	Platforms_1_8 = append(Platforms_1_7, []Platform{
 		{"linux", "mips", true},
 		{"linux", "mipsle", true},
+		{"linux", "loong64", true},
+		{"linux", "riscv64", true},
 	}...)
 
 	// no new platforms in 1.9
