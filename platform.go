@@ -165,15 +165,15 @@ var (
 		{"darwin", "386", false},
 	})
 
-	Platforms_1_16 = append(Platforms_1_15, []Platform{
+	Platforms_1_16 = addDrop(Platforms_1_15, []Platform{
 		{"android", "amd64", false},
 		{"darwin", "arm64", true},
 		{"openbsd", "mips64", false},
-	}...)
+	}, nil)
 
-	Platforms_1_17 = append(Platforms_1_16, []Platform{
+	Platforms_1_17 = addDrop(Platforms_1_16, []Platform{
 		{"windows", "arm64", true},
-	}...)
+	}, nil)
 
 	// no new platforms in 1.18
 	Platforms_1_18 = Platforms_1_17
