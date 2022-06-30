@@ -12,7 +12,8 @@ func TestGoVersion(t *testing.T) {
 	}
 
 	acceptable := []string{
-		"devel", "go1.0",
+		"devel",
+		"go1.0",
 		"go1.1",
 		"go1.2",
 		"go1.3",
