@@ -1,0 +1,6 @@
+# github.com/hashicorp/go-version v1.0.0
+## explicit
+github.com/hashicorp/go-version
+# github.com/mitchellh/iochan v1.0.0
+## explicit
+github.com/mitchellh/iochan
