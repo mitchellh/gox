@@ -63,6 +63,55 @@ func TestSupportedPlatforms(t *testing.T) {
 		t.Fatalf("bad: %#v", ps)
 	}
 
+	ps = SupportedPlatforms("go1.10")
+	if !reflect.DeepEqual(ps, Platforms_1_10) {
+		t.Fatalf("bad: %#v", ps)
+	}
+
+	ps = SupportedPlatforms("go1.11")
+	if !reflect.DeepEqual(ps, Platforms_1_11) {
+		t.Fatalf("bad: %#v", ps)
+	}
+
+	ps = SupportedPlatforms("go1.12")
+	if !reflect.DeepEqual(ps, Platforms_1_12) {
+		t.Fatalf("bad: %#v", ps)
+	}
+
+	ps = SupportedPlatforms("go1.13")
+	if !reflect.DeepEqual(ps, Platforms_1_13) {
+		t.Fatalf("bad: %#v", ps)
+	}
+
+	ps = SupportedPlatforms("go1.14")
+	if !reflect.DeepEqual(ps, Platforms_1_14) {
+		t.Fatalf("bad: %#v", ps)
+	}
+
+	ps = SupportedPlatforms("go1.15")
+	if !reflect.DeepEqual(ps, Platforms_1_15) {
+		t.Fatalf("bad: %#v", ps)
+	}
+
+	ps = SupportedPlatforms("go1.16")
+	if !reflect.DeepEqual(ps, Platforms_1_16) {
+		t.Fatalf("bad: %#v", ps)
+	}
+
+	ps = SupportedPlatforms("go1.17")
+	if !reflect.DeepEqual(ps, Platforms_1_17) {
+		t.Fatalf("bad: %#v", ps)
+	}
+
+	ps = SupportedPlatforms("go1.18")
+	if !reflect.DeepEqual(ps, Platforms_1_18) {
+		t.Fatalf("bad: %#v", ps)
+	}
+
+	ps = SupportedPlatforms("go1.10")
+	if !reflect.DeepEqual(ps, Platforms_1_10) {
+		t.Fatalf("bad: %#v", ps)
+	}
 	// Unknown
 	ps = SupportedPlatforms("foo")
 	if !reflect.DeepEqual(ps, PlatformsLatest) {
