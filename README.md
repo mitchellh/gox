@@ -10,7 +10,7 @@ To install Gox, please use `go get`. We tag versions so feel free to
 checkout that tag and compile.
 
 ```
-$ go get github.com/mitchellh/gox
+$ go install github.com/mitchellh/gox@latest
 ...
 $ gox -h
 ...
