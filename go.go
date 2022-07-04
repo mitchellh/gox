@@ -37,6 +37,8 @@ type CompileOpts struct {
 
 // GoCrossCompile
 func GoCrossCompile(opts *CompileOpts) error {
+	os.Unsetenv("GOOS")
+	os.Unsetenv("GOARCH")
 	env := append(os.Environ(),
 		"GOOS="+opts.Platform.OS,
 		"GOARCH="+opts.Platform.Arch)
