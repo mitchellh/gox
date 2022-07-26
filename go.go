@@ -120,8 +120,11 @@ func GoCrossCompile(opts *CompileOpts) error {
 		"-ldflags", opts.Ldflags,
 		"-asmflags", opts.Asmflags,
 		"-tags", opts.Tags,
-		"-o", outputPathReal,
-		opts.PackagePath)
+		"-o", outputPathReal)
+
+	if opts.PackagePath != "" {
+		args = append(args, opts.PackagePath)
+	}
 
 	_, err = execGo(opts.GoCmd, env, chdir, args...)
 	return err
