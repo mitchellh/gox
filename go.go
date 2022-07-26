@@ -26,6 +26,8 @@ type CompileOpts struct {
 	OutputTpl   string
 	Ldflags     string
 	Gcflags     string
+	Cc          string
+	Cxx         string
 	Asmflags    string
 	Tags        string
 	ModMode     string
@@ -40,6 +42,13 @@ func GoCrossCompile(opts *CompileOpts) error {
 	env := append(os.Environ(),
 		"GOOS="+opts.Platform.OS,
 		"GOARCH="+opts.Platform.Arch)
+
+	if opts.Cc != "" {
+		env = append(env, "CC="+opts.Cc)
+	}
+	if opts.Cxx != "" {
+		env = append(env, "CXX="+opts.Cxx)
+	}
 
 	// If we're building for our own platform, then enable cgo always. We
 	// respect the CGO_ENABLED flag if that is explicitly set on the platform.
