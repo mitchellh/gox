@@ -12,6 +12,7 @@ type PlatformFlag struct {
 	OS     []string
 	Arch   []string
 	OSArch []Platform
+	All    bool
 }
 
 // Platforms returns the list of platforms that were set by this flag.
@@ -127,7 +128,7 @@ func (p *PlatformFlag) Platforms(supported []Platform) []Platform {
 	if prefilter == nil {
 		prefilter = make([]Platform, 0, len(supported))
 		for _, v := range supported {
-			if v.Default {
+			if v.Default || p.All {
 				add := v
 				add.Default = false
 				prefilter = append(prefilter, add)
