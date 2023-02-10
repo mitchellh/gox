@@ -9,7 +9,7 @@ import (
 	"strings"
 	"sync"
 
-	version "github.com/hashicorp/go-version"
+	"github.com/hashicorp/go-version"
 )
 
 func main() {
@@ -208,6 +208,8 @@ func printUsage() {
 const helpText = `Usage: gox [options] [packages]
 
   Gox cross-compiles Go applications in parallel.
+
+  Version: 1.0.6
 
   If no specific operating systems or architectures are specified, Gox
   will build for all pairs supported by your version of Go.

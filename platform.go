@@ -182,9 +182,7 @@ var (
 		{"linux", "loong64", true},
 	}, nil)
 
-	Platforms_1_20 = addDrop(Platforms_1_19, []Platform{
-		{"linux", "loong64", true},
-	}, nil)
+	Platforms_1_20 = Platforms_1_19
 
 	PlatformsLatest = Platforms_1_20
 )

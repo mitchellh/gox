@@ -6,7 +6,7 @@ platforms. Gox will also build the cross-compilation toolchain for you.
 
 ## Installation
 
-To install Gox, please use `go get`. We tag versions so feel free to
+To install Gox, please use `go install`. We tag versions so feel free to
 checkout that tag and compile.
 
 ```
