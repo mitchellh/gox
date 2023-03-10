@@ -113,6 +113,11 @@ func TestSupportedPlatforms(t *testing.T) {
 		t.Fatalf("bad: %#v", ps)
 	}
 
+	ps = SupportedPlatforms("go1.20")
+	if !reflect.DeepEqual(ps, Platforms_1_20) {
+		t.Fatalf("bad: %#v", ps)
+	}
+
 	// Unknown
 	ps = SupportedPlatforms("foo")
 	if !reflect.DeepEqual(ps, PlatformsLatest) {
