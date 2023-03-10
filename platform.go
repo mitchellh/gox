@@ -178,7 +178,15 @@ var (
 	// no new platforms in 1.18
 	Platforms_1_18 = Platforms_1_17
 
-	PlatformsLatest = Platforms_1_18
+	Platforms_1_19 = addDrop(Platforms_1_18, []Platform{
+		{"linux", "loong64", true},
+	}, nil)
+
+	Platforms_1_20 = addDrop(Platforms_1_19, []Platform{
+		{"freebsd", "riscv64", true},
+	}, nil)
+
+	PlatformsLatest = Platforms_1_20
 )
 
 // SupportedPlatforms returns the full list of supported platforms for
@@ -221,6 +229,8 @@ func SupportedPlatforms(v string) []Platform {
 		{">= 1.16, < 1.17", Platforms_1_16},
 		{">= 1.17, < 1.18", Platforms_1_17},
 		{">= 1.18, < 1.19", Platforms_1_18},
+		{">= 1.19, < 1.20", Platforms_1_19},
+		{">= 1.20, < 1.21", Platforms_1_20},
 	}
 
 	for _, p := range platforms {
