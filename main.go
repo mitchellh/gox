@@ -202,14 +202,14 @@ func realMain() int {
 }
 
 func printUsage() {
-	fmt.Fprintf(os.Stderr, helpText)
+	fmt.Fprintf(os.Stderr, helpText, metaVersion)
 }
 
 const helpText = `Usage: gox [options] [packages]
 
   Gox cross-compiles Go applications in parallel.
 
-  Version: 1.0.6
+  Version: %s
 
   If no specific operating systems or architectures are specified, Gox
   will build for all pairs supported by your version of Go.
