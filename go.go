@@ -32,6 +32,7 @@ type CompileOpts struct {
 	Tags        string
 	ModMode     string
 	Buildmode   string
+	BuildVCS    string
 	Cgo         bool
 	Rebuild     bool
 	TrimPath    bool
@@ -128,6 +129,9 @@ func GoCrossCompile(opts *CompileOpts) error {
 	}
 	if opts.Buildmode != "" {
 		args = append(args, "-buildmode", opts.Buildmode)
+	}
+	if opts.BuildVCS != "" {
+		args = append(args, "-buildvcs", opts.BuildVCS)
 	}
 	if opts.Race {
 		args = append(args, "-race")

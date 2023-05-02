@@ -26,7 +26,7 @@ func realMain() int {
 	var platformFlag PlatformFlag
 	var tags string
 	var verbose bool
-	var flagGcflags, flagAsmflags, flagBuildmode string
+	var flagGcflags, flagAsmflags, flagBuildmode, flagBuildVCS string
 	var flagCgo, flagRebuild, flagTrimPath, flagListOSArch, flagRaceFlag bool
 	var flagGoCmd string
 	var modMode string
@@ -47,6 +47,7 @@ func realMain() int {
 	flags.BoolVar(&flagListOSArch, "osarch-list", false, "")
 	flags.BoolVar(&flagRaceFlag, "race", false, "")
 	flags.StringVar(&flagBuildmode, "buildmode", "", "")
+	flags.StringVar(&flagBuildVCS, "buildvcs", "", "")
 	flags.StringVar(&flagGcflags, "gcflags", "", "")
 	flags.StringVar(&flagAsmflags, "asmflags", "", "")
 	flags.StringVar(&flagGoCmd, "gocmd", "go", "")
@@ -165,6 +166,7 @@ func realMain() int {
 					Cgo:         flagCgo,
 					Rebuild:     flagRebuild,
 					Buildmode:   flagBuildmode,
+					BuildVCS:    flagBuildVCS,
 					TrimPath:    flagTrimPath,
 					GoCmd:       flagGoCmd,
 					Race:        flagRaceFlag,

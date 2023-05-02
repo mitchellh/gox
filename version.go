@@ -1,3 +1,3 @@
 package main
 
-const metaVersion = "1.1.0"
+const metaVersion = "1.1.1"
